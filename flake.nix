@@ -13,12 +13,6 @@
 
   outputs = inputs@{ self, nixpkgs, flake-parts, ... }:
     let
-      sysPkgs = system: import inputs.nixpkgs {
-        inherit system;
-        overlays = [
-          inputs.fenix.overlays.default
-        ];
-      };
       internals = import ./internals.nix;
       inherit (internals) fold;
     in
@@ -29,7 +23,12 @@
       ];
       perSystem = { system, ... }:
         let
-          pkgs = sysPkgs system;
+          pkgs = import inputs.nixpkgs {
+            inherit system;
+            overlays = [
+              inputs.fenix.overlays.default
+            ];
+          };
           conch-lib = import ./lib.nix { inherit pkgs; };
         in
         {
@@ -42,7 +41,7 @@
 
           mkSystem = system:
             let
-              pkgs = sysPkgs system;
+              pkgs = import inputs.nixpkgs { inherit system; };
               config = mkConfig { inherit pkgs; };
             in
             self.packages.${system}.${config.shell}.run config;
