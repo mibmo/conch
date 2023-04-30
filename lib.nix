@@ -1,22 +1,27 @@
 { pkgs, ... }:
 let
   mkBase = { pname, ... }: {
+    name = "conch-${pname}";
     shellHook = ''
       echo "test! you've entered the conch-${pname} shell"
     '';
   };
   mkConch = args:
     let
-      shellHook = "";
-      shellArgs = ((mkBase args) // args);
+      shellArgs = (mkBase args) // args;
     in
     pkgs.mkShell shellArgs;
 
   mkRunnable =
+    let
+      system = pkgs.system;
+    in
     shell: shell // {
-      run = system: {
-        formatter.${system} = pkgs.nixpkgs-fmt;
-        devShells.${system}.default = shell;
+      run = config: {
+        formatter.${system} = config.formatter or pkgs.nixpkgs-fmt;
+        devShells.${system}.default = shell.overrideAttrs (final: prev: {
+          nativeBuildInputs = prev.nativeBuildInputs ++ config.packages or [ ];
+        });
       };
     };
 
@@ -24,7 +29,7 @@ let
   callShell = shell: args: mkRunnable (callPackage shell args);
 
   lib = {
-    inherit mkConch callShell;
+    inherit mkBase mkConch callShell;
   };
 in
 lib

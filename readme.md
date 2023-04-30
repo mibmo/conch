@@ -44,4 +44,4 @@ Conch is far from complete and the internals are likely to change a lot, but con
 
 ### TODO
 - CI to test shells, i.e. does the `rust` conch work on `riscv-linux` and the `go` on `aarch64-darwin`?
-- `loadShell` shorthand that supports multiple systems, e.g. `conch.loadShell ["aarch64-darwin riscv-linux"] "go"`
+- set `name = "conch-${pname}"` after overrides and only if `name` is unset
