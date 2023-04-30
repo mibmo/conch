@@ -19,6 +19,7 @@ let
           shellHook = builtins.foldl' (l: r: l + "\n" + r) "" [
             prev.shellHook
             (if config ? shellHook then config.shellHook else "")
+            (if config ? motd then "echo \"${config.motd}\"" else "")
           ];
         in
         {
