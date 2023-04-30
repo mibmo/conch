@@ -31,9 +31,13 @@
           };
           conch-lib = import ./lib.nix { inherit pkgs; };
         in
-        {
+        rec {
           formatter = pkgs.nixpkgs-fmt;
           packages = import ./shells { inherit pkgs conch-lib; };
+
+          devShells.default = packages.nix.overrideConfig {
+            motd = "Thank you for contributing to Conch! 🐚";
+          };
         };
       flake.load = systems: mkConfig:
         let
