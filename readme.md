@@ -23,6 +23,9 @@ placing a `flake.nix` at the root of your project directory.
 ## Environments
 A full list of available environments and their options
 
+### Nix
+Nix language server
+
 ### Rust
 Rust nightly with rust-analyzer
 
