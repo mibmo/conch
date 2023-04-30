@@ -14,10 +14,18 @@ let
 
   mkConfigable =
     shell: shell // {
-      overrideConfig = config: shell.overrideAttrs (final: prev: {
-        name = config.name or prev.name;
-        buildInputs = prev.buildInputs ++ config.packages or [ ];
-      });
+      overrideConfig = config: shell.overrideAttrs (final: prev:
+        let
+          shellHook = builtins.foldl' (l: r: l + "\n" + r) "" [
+            prev.shellHook
+            (if config ? shellHook then config.shellHook else "")
+          ];
+        in
+        {
+          inherit shellHook;
+          name = config.name or prev.name;
+          buildInputs = prev.buildInputs ++ config.packages or [ ];
+        });
     };
 
   mkRunnable =
