@@ -2,9 +2,6 @@
 let
   mkBase = { pname, ... }: {
     name = "conch-${pname}";
-    shellHook = ''
-      echo "test! you've entered the conch-${pname} shell"
-    '';
   };
   mkConch = args:
     let
