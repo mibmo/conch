@@ -47,8 +47,9 @@
             let
               pkgs = import inputs.nixpkgs { inherit system; };
               config = mkConfig { inherit pkgs; };
+              shell = if config ? shell then config.shell else "base";
             in
-            self.packages.${system}.${config.shell}.run config;
+            self.packages.${system}.${shell}.run config;
         in
         fold fields mkSystem systems;
     };

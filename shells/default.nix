@@ -3,7 +3,7 @@ let
   inherit (conch-lib) mkConch callShell;
 
   shells = rec {
-    #default = mkConch { pname = "base"; };
+    base = callShell ./base.nix { };
     go = callShell ./go.nix { };
     nix = callShell ./nix.nix { };
     rust = callShell ./rust.nix { };
