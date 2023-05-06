@@ -18,8 +18,10 @@ placing a `flake.nix` at the root of your project directory.
 ```nix
 {
     inputs.conch.url = "github:mibmo/conch";
-    outputs = { conch }:
-        conch.loadShell "x86_64-linux" "rust" { };
+    outputs = { conch, ... }:
+        conch.load ["x86_64-linux"] ({ ... }: {
+            shell = "rust";
+        });
 }
 ```
 
