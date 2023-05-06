@@ -5,9 +5,12 @@
 Leveraging the power of Nix for powerful environment-specific shells
 that are made to suit your project.
 
-Have a backend you're developing in Rust? No problem.
-Need to work with CAD?.
-Need to work with CAD? No problem.
+Have a backend you're developing in nightly Rust? _no problem, there's an environment for that._
+Need to work with CAD? _sure thing! try the `cad` environment._
+Making 3D graphics? _great! pull in the `graphics3d` environment._
+
+Doing something entirely different?
+specify no environment (or the closest to your usecase) and set your packages with the `packages` attribute.
 
 ## Usage
 Setting up a generic environment for working with Rust is as simple as 
