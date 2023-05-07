@@ -1,5 +1,5 @@
 {
-  description = "Development environments tailored to your needs";
+  description = "Environments tailored to your projects' needs";
 
   inputs = {
     nixpkgs.url = "nixpkgs/nixos-unstable";
@@ -12,8 +12,14 @@
   };
 
   outputs = inputs@{ self, nixpkgs, flake-parts, ... }:
+    let
+      internals = import ./internals.nix;
+      inherit (internals) fold;
+    in
     flake-parts.lib.mkFlake { inherit inputs; } {
       systems = [
+        "aarch64-darwin"
+        "riscv64-linux"
         "x86_64-darwin"
         "x86_64-linux"
       ];
@@ -27,11 +33,26 @@
           };
           conch-lib = import ./lib.nix { inherit pkgs; };
         in
-        {
+        rec {
           formatter = pkgs.nixpkgs-fmt;
           packages = import ./shells { inherit pkgs conch-lib; };
+
+          devShells.default = packages.nix.overrideConfig {
+            motd = "Thank you for contributing to Conch! 🐚";
+          };
         };
-      flake.loadShell = system: shell:
-        self.packages.${system}.${shell}.run system;
+      flake.load = systems: mkConfig:
+        let
+          fields = [ "devShells" "formatter" ];
+
+          mkSystem = system:
+            let
+              pkgs = import inputs.nixpkgs { inherit system; };
+              config = mkConfig { inherit pkgs; };
+              shell = if config ? shell then config.shell else "base";
+            in
+            self.packages.${system}.${shell}.run config;
+        in
+        fold fields mkSystem systems;
     };
 }

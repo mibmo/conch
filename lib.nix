@@ -1,30 +1,47 @@
 { pkgs, ... }:
 let
   mkBase = { pname, ... }: {
-    shellHook = ''
-      echo "test! you've entered the conch-${pname} shell"
-    '';
+    name = "conch-${pname}";
   };
   mkConch = args:
     let
-      shellHook = "";
-      shellArgs = ((mkBase args) // args);
+      shellArgs = (mkBase args) // args;
     in
     pkgs.mkShell shellArgs;
 
-  mkRunnable =
+  mkConfigable =
     shell: shell // {
-      run = system: {
-        formatter.${system} = pkgs.nixpkgs-fmt;
-        devShells.${system}.default = shell;
+      overrideConfig = config: shell.overrideAttrs (final: prev:
+        let
+          shellHook = builtins.foldl' (l: r: l + "\n" + r) "" [
+            prev.shellHook
+            (if config ? shellHook then config.shellHook else "")
+            (if config ? motd then "echo \"${config.motd}\"" else "")
+          ];
+        in
+        {
+          inherit shellHook;
+          name = config.name or prev.name;
+          buildInputs = prev.buildInputs ++ config.packages or [ ];
+        });
+    };
+
+  mkRunnable =
+    let
+      system = pkgs.system;
+    in
+    shell: shell // {
+      run = config: {
+        formatter.${system} = config.formatter or pkgs.nixpkgs-fmt;
+        devShells.${system}.default = shell.overrideConfig config;
       };
     };
 
   callPackage = pkgs.lib.callPackageWith (pkgs // lib);
-  callShell = shell: args: mkRunnable (callPackage shell args);
+  callShell = shell: args: mkRunnable (mkConfigable (callPackage shell args));
 
   lib = {
-    inherit mkConch callShell;
+    inherit mkBase mkConch callShell;
   };
 in
 lib

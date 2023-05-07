@@ -5,9 +5,12 @@
 Leveraging the power of Nix for powerful environment-specific shells
 that are made to suit your project.
 
-Have a backend you're developing in Rust? No problem.
-Need to work with CAD?.
-Need to work with CAD? No problem.
+Have a backend you're developing in nightly Rust? _no problem, there's an environment for that._
+Need to work with CAD? _sure thing! try the `cad` environment._
+Making 3D graphics? _great! pull in the `graphics3d` environment._
+
+Doing something entirely different?
+specify no environment (or the closest to your usecase) and set your packages with the `packages` attribute.
 
 ## Usage
 Setting up a generic environment for working with Rust is as simple as 
@@ -15,13 +18,22 @@ placing a `flake.nix` at the root of your project directory.
 ```nix
 {
     inputs.conch.url = "github:mibmo/conch";
-    outputs = { conch }:
-        conch.loadShell "x86_64-linux" "rust" { };
+    outputs = { conch, ... }:
+        conch.load ["x86_64-linux"] ({ ... }: {
+            shell = "rust";
+        });
 }
 ```
 
+Entering the environment is then as simple as running `nix develop`.
+
+Ready to copy example flakes are available in the examples directory.
+
 ## Environments
 A full list of available environments and their options
+
+### Nix
+Nix language server
 
 ### Rust
 Rust nightly with rust-analyzer
@@ -44,4 +56,4 @@ Conch is far from complete and the internals are likely to change a lot, but con
 
 ### TODO
 - CI to test shells, i.e. does the `rust` conch work on `riscv-linux` and the `go` on `aarch64-darwin`?
-- `loadShell` shorthand that supports multiple systems, e.g. `conch.loadShell ["aarch64-darwin riscv-linux"] "go"`
+- set `name = "conch-${pname}"` after overrides and only if `name` is unset
