@@ -25,6 +25,8 @@ placing a `flake.nix` at the root of your project directory.
 }
 ```
 
+Ready to copy example flakes are available in the examples directory.
+
 ## Environments
 A full list of available environments and their options
 
