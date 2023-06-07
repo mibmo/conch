@@ -1,5 +1,11 @@
 {
-  inputs.conch.url = "github:mibmo/conch";
+  inputs = {
+    nixpkgs.url = "nixpkgs/nixos-unstable";
+    conch = {
+      url = "github:mibmo/conch";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+  };
   outputs = { conch, ... }:
     conch.load [
       "aarch64-darwin"
