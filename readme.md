@@ -27,7 +27,10 @@ placing a `flake.nix` at the root of your project directory.
 
 Entering the environment is then as simple as running `nix develop`.
 
-Ready to copy example flakes are available in the examples directory.
+Ready to copy template flakes are available in the examples directory.
+**NOTE:** Conch's nixpkgs input should follow your own!
+Otherwise things may break or in general just not work as expected.
+The examples follow best practices and should be referred to.
 
 ## Environments
 A full list of available environments and their options
