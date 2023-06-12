@@ -19,10 +19,11 @@ let
             (if config ? motd then "echo \"${config.motd}\"" else "")
           ];
         in
-        {
+        rec {
           inherit shellHook;
           name = config.name or prev.name;
           buildInputs = prev.buildInputs ++ config.packages or [ ];
+          LD_LIBRARY_PATH = pkgs.lib.makeLibraryPath (buildInputs);
         });
     };
 
