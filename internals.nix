@@ -14,6 +14,6 @@ let
       (joinAttrs (builtins.map (field: { ${field} = { }; }) fields))
       (builtins.map maker inputs);
 
-  lib = { inherit joinAttrs mergeFields fold; };
+  internals = { inherit joinAttrs mergeFields fold; };
 in
-lib
+internals
