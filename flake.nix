@@ -3,7 +3,6 @@
 
   inputs = {
     nixpkgs.url = "nixpkgs/nixos-unstable";
-    flake-parts.url = "github:hercules-ci/flake-parts";
 
     fenix = {
       url = "github:nix-community/fenix";
@@ -14,45 +13,41 @@
   outputs = inputs@{ self, nixpkgs, flake-parts, ... }:
     let
       internals = import ./internals.nix;
-      inherit (internals) fold;
-    in
-    flake-parts.lib.mkFlake { inherit inputs; } {
+      inherit (internals) mergeFields joinAttrs fold;
+
       systems = [
         "aarch64-darwin"
         "riscv64-linux"
         "x86_64-darwin"
         "x86_64-linux"
       ];
-      perSystem = { system, ... }:
+    in
+    rec {
+      lib = import ./lib.nix;
+      load = systems: module:
         let
-          pkgs = import inputs.nixpkgs {
-            inherit system;
-            overlays = [
-              inputs.fenix.overlays.default
-            ];
-          };
-          conch-lib = import ./lib.nix { inherit pkgs; };
-        in
-        rec {
-          formatter = pkgs.nixpkgs-fmt;
-          packages = import ./shells { inherit pkgs conch-lib; };
-
-          devShells.default = packages.nix.overrideConfig {
-            motd = "Thank you for contributing to Conch! 🐚";
-          };
-        };
-      flake.load = systems: mkConfig:
-        let
-          fields = [ "devShells" "formatter" ];
+          fields = [ "devShells" ];
 
           mkSystem = system:
             let
-              pkgs = import inputs.nixpkgs { inherit system; };
-              config = mkConfig { inherit pkgs; };
-              shell = if config ? shell then config.shell else "base";
+              pkgs = import inputs.nixpkgs {
+                inherit system;
+                overlays = [
+                  inputs.fenix.overlays.default
+                ];
+              };
+              conch-lib = lib { inherit pkgs; };
             in
-            self.packages.${system}.${shell}.run config;
+            conch-lib.mkFlake {
+              userModule = module;
+              args = { inherit pkgs; };
+            };
         in
         fold fields mkSystem systems;
-    };
+    } //
+    fold [ "formatter" ]
+      (system: {
+        formatter = inputs.nixpkgs.legacyPackages.${system}.nixpkgs-fmt;
+      })
+      systems;
 }
