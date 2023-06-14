@@ -12,7 +12,11 @@ let
     builtins.foldl'
       (mergeFields fields)
       (joinAttrs (builtins.map (field: { ${field} = { }; }) fields))
-      (builtins.map maker inputs);
+      (
+        builtins.map
+          ({ attr, input }: joinAttrs (builtins.map (field: { ${field}.${input} = attr.${field}; }) fields))
+          (map (input: { attr = maker input; inherit input; }) inputs)
+      );
 
   internals = { inherit joinAttrs mergeFields fold; };
 in
