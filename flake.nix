@@ -10,8 +10,10 @@
     };
   };
 
-  outputs = inputs@{ self, nixpkgs, flake-parts, ... }:
+  outputs =
+    inputs @ { self, nixpkgs, ... }:
     let
+      lib = import ./lib.nix;
       internals = import ./internals.nix;
       inherit (internals) mergeFields joinAttrs fold;
 
@@ -21,33 +23,24 @@
         "x86_64-darwin"
         "x86_64-linux"
       ];
-    in
-    rec {
-      lib = import ./lib.nix;
-      load = systems: module:
-        let
-          fields = [ "devShells" ];
 
-          mkSystem = system:
-            let
-              pkgs = import inputs.nixpkgs {
-                inherit system;
-                overlays = [
-                  inputs.fenix.overlays.default
-                ];
-              };
-              conch-lib = lib { inherit pkgs; };
-            in
-            conch-lib.mkFlake {
-              userModule = module;
-              args = { inherit pkgs; };
-            };
+      loadModule = module: system:
+        let
+          pkgs = import inputs.nixpkgs {
+            inherit system;
+            overlays = [
+              inputs.fenix.overlays.default
+            ];
+          };
+          conch-lib = lib { inherit pkgs; };
         in
-        fold fields mkSystem systems;
-    } //
-    fold [ "formatter" ]
-      (system: {
-        formatter = inputs.nixpkgs.legacyPackages.${system}.nixpkgs-fmt;
-      })
-      systems;
+        conch-lib.mkFlake {
+          userModule = module;
+          args = { inherit pkgs; };
+        };
+    in
+    {
+      inherit lib;
+      load = systems: module: fold [ "devShells" ] (loadModule module) systems;
+    } // fold [ "devShell" "formatter" ] (loadModule ({ ... }: { })) systems;
 }

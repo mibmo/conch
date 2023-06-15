@@ -1,48 +1,30 @@
 { pkgs, ... }:
 let
-  mkBase = { pname, ... }: {
-    name = "conch-${pname}";
+  mkFlake = inputs @ { ... }:
+    let
+      module = mkModule inputs;
+      inherit (module) config;
+    in
+    {
+      inherit (config) formatter;
+      devShell = mkShell config;
+    };
+
+  mkShell = config: pkgs.mkShell {
+    inherit (config) packages;
   };
-  mkConch = args:
+
+  mkModule = { args, userModule }:
     let
-      shellArgs = (mkBase args) // args;
+      toplevel = import ./modules/top-level.nix { inherit extraArgs; };
+      extraArgs = args // { inherit pkgs; };
     in
-    pkgs.mkShell shellArgs;
-
-  mkConfigable =
-    shell: shell // {
-      overrideConfig = config: shell.overrideAttrs (final: prev:
-        let
-          shellHook = builtins.foldl' (l: r: l + "\n" + r) "" [
-            prev.shellHook
-            (if config ? shellHook then config.shellHook else "")
-            (if config ? motd then "echo \"${config.motd}\"" else "")
-          ];
-        in
-        rec {
-          inherit shellHook;
-          name = config.name or prev.name;
-          buildInputs = prev.buildInputs ++ config.packages or [ ];
-          LD_LIBRARY_PATH = pkgs.lib.makeLibraryPath (buildInputs);
-        });
+    pkgs.lib.evalModules {
+      modules = [ toplevel userModule ];
     };
-
-  mkRunnable =
-    let
-      system = pkgs.system;
-    in
-    shell: shell // {
-      run = config: {
-        formatter.${system} = config.formatter or pkgs.nixpkgs-fmt;
-        devShells.${system}.default = shell.overrideConfig config;
-      };
-    };
-
-  callPackage = pkgs.lib.callPackageWith (pkgs // lib);
-  callShell = shell: args: mkRunnable (mkConfigable (callPackage shell args));
 
   lib = {
-    inherit mkBase mkConch callShell;
+    inherit mkFlake;
   };
 in
 lib
