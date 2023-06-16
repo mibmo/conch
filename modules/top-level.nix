@@ -9,6 +9,11 @@ with lib; {
       default = [ ];
     };
 
+    libraries = mkOption {
+      type = with types; listOf package;
+      default = [ ];
+    };
+
     formatter = mkOption {
       type = with types; package;
       default = pkgs.nixpkgs-fmt;
