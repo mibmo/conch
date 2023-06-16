@@ -39,7 +39,7 @@
           args = { inherit pkgs; };
         };
 
-      load = systems: module: fold [ "devShell" ] (loadModule module) systems;
+      load = systems: module: fold [ "devShell" "formatter" ] (loadModule module) systems;
     in
     {
       inherit lib load;
