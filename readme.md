@@ -1,62 +1,38 @@
 [issues]: https://github.com/mibmo/conch/issues
 [issues-new]: https://github.com/mibmo/conch/issues/new
+[search]: https://mibmo.github.io/conch/search
 
 # conch 🐚
-Leveraging the power of Nix for powerful environment-specific shells
-that are made to suit your project.
-
-Have a backend you're developing in nightly Rust? _no problem, there's an environment for that._
-Need to work with CAD? _sure thing! try the `cad` environment._
-Making 3D graphics? _great! pull in the `graphics3d` environment._
-
-Doing something entirely different?
-specify no environment (or the closest to your usecase) and set your packages with the `packages` attribute.
+Leveraging the power of Nix modules for powerful
+environment-specific shells to suit your project.
 
 ## Usage
 Setting up a generic environment for working with Rust is as simple as 
 placing a `flake.nix` at the root of your project directory.
 ```nix
 {
-    inputs.conch.url = "github:mibmo/conch";
-    outputs = { conch, ... }:
-        conch.load ["x86_64-linux"] ({ ... }: {
-            shell = "rust";
-        });
+  inputs.conch.url = "github:mibmo/conch";
+  outputs = { conch, ... }:
+    conch.load [ "x86_64-linux" ] ({ ... }: {
+      development.rust = {
+        enable = true;
+        profile = "complete";
+      };
+    });
 }
 ```
 
-Entering the environment is then as simple as running `nix develop`.
+Entering the environment by running `nix develop`.
 
-Ready to copy template flakes are available in the examples directory.
+A full list of the modules and their options are available at [mibmo.github.io/conch/search][search]
+
 **NOTE:** Conch's nixpkgs input should follow your own!
 Otherwise things may break or in general just not work as expected.
 The examples follow best practices and should be referred to.
 
-## Environments
-A full list of available environments and their options
-
-### Nix
-Nix language server
-
-### Rust
-Rust nightly with rust-analyzer
-
-### Go (TODO)
-
-### Clojure (TODO)
-Clojure with Leiningen
-
-### Kubernetes (TODO)
-The full Kubernetes suite with third-party tools.
-- helm
-- kubeseal
-
 ### Missing something?
-Create an [issue][issues-new] and we can look into it!
+Open an [issue][issues-new]!
 
-# Contributing
-Conch is far from complete and the internals are likely to change a lot, but contributions are always welcome!
-
-### TODO
-- CI to test shells, i.e. does the `rust` conch work on `riscv-linux` and the `go` on `aarch64-darwin`?
-- set `name = "conch-${pname}"` after overrides and only if `name` is unset
+## Contributing
+Conch is far from complete and the internals are likely to change a lot,
+but contributions are always welcome! *(especially of the module variety!)*
