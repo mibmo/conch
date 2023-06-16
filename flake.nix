@@ -38,9 +38,10 @@
           userModule = module;
           args = { inherit pkgs; };
         };
+
+      load = systems: module: fold [ "devShell" ] (loadModule module) systems;
     in
     {
-      inherit lib;
-      load = systems: module: fold [ "devShells" ] (loadModule module) systems;
-    } // fold [ "devShell" "formatter" ] (loadModule ({ ... }: { })) systems;
+      inherit lib load;
+    } // load systems ({ ... }: { });
 }
