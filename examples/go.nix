@@ -14,10 +14,10 @@
       "x86_64-darwin"
       "x86_64-linux"
     ]
-    ({ pkgs, ... }: {
-      development.go = {
-        enable = true;
-        package = pkgs.go_1_18;
-      };
-    });
+      ({ pkgs, ... }: {
+        development.go = {
+          enable = true;
+          package = pkgs.go_1_18;
+        };
+      });
 }

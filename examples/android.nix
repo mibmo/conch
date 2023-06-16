@@ -12,10 +12,10 @@
       "x86_64-darwin"
       "x86_64-linux"
     ]
-    ({ ... }: {
-      development = {
-        java.enable = true;
-        gradle.enable = true;
-      };
-    });
+      ({ ... }: {
+        development = {
+          java.enable = true;
+          gradle.enable = true;
+        };
+      });
 }
