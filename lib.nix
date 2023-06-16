@@ -10,9 +10,20 @@ let
       devShell = mkShell config;
     };
 
-  mkShell = config: pkgs.mkShell {
-    inherit (config) packages;
-  };
+  mkShell = config:
+    let
+      inherit (pkgs.lib) escapeShellArg;
+      aliasCmds = map
+        ({ name, definition }: "alias ${escapeShellArg name}=${escapeShellArg definition}")
+        config.aliases;
+      aliasCmd = builtins.foldl' (acc: cmd: acc + cmd) "" aliasCmds;
+    in
+    pkgs.mkShell {
+      inherit (config) packages;
+      shellHook = ''
+        echo "hello! :D"
+      '' + aliasCmd;
+    };
 
   mkModule = { args, userModule }:
     let

@@ -13,6 +13,15 @@ with lib; {
       type = with types; package;
       default = pkgs.nixpkgs-fmt;
     };
+
+    aliases = mkOption {
+      type = with types; listOf attrs;
+      default = [ ];
+      description = mdDoc ''
+        List of sets with form `{ name = str; definition = string; }`
+        that are added to the shell as aliases.
+      '';
+    };
   };
 
   config._module = {
