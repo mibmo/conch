@@ -21,9 +21,7 @@ let
     pkgs.mkShell {
       inherit (config) packages;
       LD_LIBRARY_PATH = pkgs.lib.makeLibraryPath config.libraries;
-      shellHook = ''
-        echo "hello! :D"
-      '' + aliasCmd;
+      shellHook = aliasCmd;
     };
 
   mkModule = { args, userModule }:
