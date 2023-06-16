@@ -1,4 +1,4 @@
-# Go 1.18 environment
+# Android environment with Java and Gradle
 {
   inputs = {
     nixpkgs.url = "nixpkgs/nixos-unstable";
@@ -9,15 +9,13 @@
   };
   outputs = { conch, ... }:
     conch.load [
-      "aarch64-darwin"
-      "riscv64-linux"
       "x86_64-darwin"
       "x86_64-linux"
     ]
-    ({ pkgs, ... }: {
-      development.go = {
-        enable = true;
-        package = pkgs.go_1_18;
+    ({ ... }: {
+      development = {
+        java.enable = true;
+        gradle.enable = true;
       };
     });
 }

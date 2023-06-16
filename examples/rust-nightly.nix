@@ -1,3 +1,4 @@
+# Nightly Rust
 {
   inputs = {
     nixpkgs.url = "nixpkgs/nixos-unstable";
@@ -14,6 +15,9 @@
       "x86_64-linux"
     ]
       ({ ... }: {
-        shell = "rust";
+        development.rust = {
+          enable = true;
+          profile = "complete";
+        };
       });
 }
