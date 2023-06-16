@@ -3,7 +3,6 @@
 
   inputs = {
     nixpkgs.url = "nixpkgs/nixos-unstable";
-    flake-parts.url = "github:hercules-ci/flake-parts";
 
     fenix = {
       url = "github:nix-community/fenix";
@@ -11,19 +10,21 @@
     };
   };
 
-  outputs = inputs@{ self, nixpkgs, flake-parts, ... }:
+  outputs =
+    inputs @ { self, nixpkgs, ... }:
     let
+      lib = import ./lib.nix;
       internals = import ./internals.nix;
-      inherit (internals) fold;
-    in
-    flake-parts.lib.mkFlake { inherit inputs; } {
+      inherit (internals) mergeFields joinAttrs fold;
+
       systems = [
         "aarch64-darwin"
         "riscv64-linux"
         "x86_64-darwin"
         "x86_64-linux"
       ];
-      perSystem = { system, ... }:
+
+      loadModule = module: system:
         let
           pkgs = import inputs.nixpkgs {
             inherit system;
@@ -31,28 +32,16 @@
               inputs.fenix.overlays.default
             ];
           };
-          conch-lib = import ./lib.nix { inherit pkgs; };
+          conch-lib = lib { inherit pkgs; };
         in
-        rec {
-          formatter = pkgs.nixpkgs-fmt;
-          packages = import ./shells { inherit pkgs conch-lib; };
-
-          devShells.default = packages.nix.overrideConfig {
-            motd = "Thank you for contributing to Conch! 🐚";
-          };
+        conch-lib.mkFlake {
+          userModule = module;
+          args = { inherit pkgs; };
         };
-      flake.load = systems: mkConfig:
-        let
-          fields = [ "devShells" "formatter" ];
 
-          mkSystem = system:
-            let
-              pkgs = import inputs.nixpkgs { inherit system; };
-              config = mkConfig { inherit pkgs; };
-              shell = if config ? shell then config.shell else "base";
-            in
-            self.packages.${system}.${shell}.run config;
-        in
-        fold fields mkSystem systems;
-    };
+      load = systems: module: fold [ "devShell" "formatter" ] (loadModule module) systems;
+    in
+    {
+      inherit lib load;
+    } // load systems ({ ... }: { });
 }

@@ -1,4 +1,0 @@
-{ mkConch }:
-mkConch {
-  pname = "base";
-}

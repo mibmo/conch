@@ -1,48 +1,41 @@
 { pkgs, ... }:
 let
-  mkBase = { pname, ... }: {
-    name = "conch-${pname}";
-  };
-  mkConch = args:
+  mkFlake = inputs @ { ... }:
     let
-      shellArgs = (mkBase args) // args;
+      module = mkModule inputs;
+      inherit (module) config;
     in
-    pkgs.mkShell shellArgs;
-
-  mkConfigable =
-    shell: shell // {
-      overrideConfig = config: shell.overrideAttrs (final: prev:
-        let
-          shellHook = builtins.foldl' (l: r: l + "\n" + r) "" [
-            prev.shellHook
-            (if config ? shellHook then config.shellHook else "")
-            (if config ? motd then "echo \"${config.motd}\"" else "")
-          ];
-        in
-        rec {
-          inherit shellHook;
-          name = config.name or prev.name;
-          buildInputs = prev.buildInputs ++ config.packages or [ ];
-          LD_LIBRARY_PATH = pkgs.lib.makeLibraryPath (buildInputs);
-        });
+    {
+      inherit (config) formatter;
+      devShell = mkShell config;
     };
 
-  mkRunnable =
+  mkShell = config:
     let
-      system = pkgs.system;
+      inherit (pkgs.lib) escapeShellArg;
+      aliasCmds = map
+        ({ name, definition }: "alias ${escapeShellArg name}=${escapeShellArg definition}")
+        config.aliases;
+      aliasCmd = builtins.foldl' (acc: cmd: acc + cmd) "" aliasCmds;
     in
-    shell: shell // {
-      run = config: {
-        formatter.${system} = config.formatter or pkgs.nixpkgs-fmt;
-        devShells.${system}.default = shell.overrideConfig config;
-      };
+    pkgs.mkShell {
+      inherit (config) packages;
+      shellHook = ''
+        echo "hello! :D"
+      '' + aliasCmd;
     };
 
-  callPackage = pkgs.lib.callPackageWith (pkgs // lib);
-  callShell = shell: args: mkRunnable (mkConfigable (callPackage shell args));
+  mkModule = { args, userModule }:
+    let
+      toplevel = import ./modules/top-level.nix { inherit extraArgs; };
+      extraArgs = args // { inherit pkgs; };
+    in
+    pkgs.lib.evalModules {
+      modules = [ toplevel userModule ];
+    };
 
   lib = {
-    inherit mkBase mkConch callShell;
+    inherit mkFlake;
   };
 in
 lib
