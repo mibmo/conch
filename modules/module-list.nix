@@ -5,4 +5,5 @@
   ./development/go.nix
   ./development/gradle.nix
   ./development/minecraft/fabric.nix
+  ./operations/nixos-anywhere.nix
 ]

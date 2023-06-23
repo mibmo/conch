@@ -8,6 +8,10 @@
       url = "github:nix-community/fenix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    nixos-anywhere = {
+      url = "github:numtide/nixos-anywhere";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
@@ -36,7 +40,7 @@
         in
         conch-lib.mkFlake {
           userModule = module;
-          args = { inherit pkgs; };
+          args = { inherit pkgs inputs system; };
         };
 
       load = systems: module: fold [ "devShell" "formatter" ] (loadModule module) systems;
