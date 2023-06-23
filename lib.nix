@@ -24,10 +24,9 @@ let
       shellHook = aliasCmd;
     };
 
-  mkModule = { args, userModule }:
+  mkModule = { extraArgs, userModule }:
     let
       toplevel = import ./modules/top-level.nix { inherit extraArgs; };
-      extraArgs = args // { inherit pkgs; };
     in
     pkgs.lib.evalModules {
       modules = [ toplevel userModule ];

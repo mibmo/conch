@@ -40,7 +40,7 @@
         in
         conch-lib.mkFlake {
           userModule = module;
-          args = { inherit pkgs inputs system; };
+          extraArgs = { inherit pkgs inputs system; };
         };
 
       load = systems: module: fold [ "devShell" "formatter" ] (loadModule module) systems;
