@@ -12,7 +12,7 @@ let
     {
       formatter.${system} = config.formatter;
       devShells.${system}.default = mkShell config pkgs;
-    };
+    } // config.flake;
 
   mkShell = config: pkgs:
     let

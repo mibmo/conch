@@ -1,4 +1,5 @@
 [
+  ./flake-module.nix
   ./development/java.nix
   ./development/rust.nix
   ./development/bevy.nix
