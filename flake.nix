@@ -17,9 +17,8 @@
   outputs =
     inputs @ { self, nixpkgs, ... }:
     let
-      lib = import ./lib.nix;
-      internals = import ./internals.nix;
-      inherit (internals) mergeFields joinAttrs fold;
+      nixpkgs-lib = nixpkgs.lib;
+      conch-lib = import ./lib.nix { inherit nixpkgs-lib; };
 
       systems = [
         "aarch64-darwin"
@@ -36,16 +35,22 @@
               inputs.fenix.overlays.default
             ];
           };
-          conch-lib = lib { inherit pkgs; };
         in
         conch-lib.mkFlake {
+          inherit system pkgs;
           userModule = module;
           extraArgs = { inherit pkgs inputs system; };
         };
 
-      load = systems: module: fold [ "devShell" "formatter" ] (loadModule module) systems;
+      # @todo: migrate to lib.recursiveUpdate
+      # also nixpkgs' lib is available through nixpkgs.lib; there's no need to import it
+      load = systems: module: builtins.foldl'
+        nixpkgs-lib.recursiveUpdate
+        { }
+        (map (loadModule module) systems);
+      #load = systems: module: fold [ "devShell" "formatter" ] (loadModule module) systems;
     in
     {
-      inherit lib load;
-    } // load systems ({ ... }: { });
+      inherit load;
+    } // load systems ({ pkgs, system, ... }: { });
 }

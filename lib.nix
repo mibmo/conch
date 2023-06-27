@@ -1,18 +1,21 @@
-{ pkgs, ... }:
+{ nixpkgs-lib }:
 let
-  mkFlake = inputs @ { ... }:
+  inherit (nixpkgs-lib) escapeShellArg makeLibraryPath;
+  inherit (nixpkgs-lib.modules) evalModules;
+
+  mkFlake = inputs@{ ... }:
     let
+      inherit (inputs) system pkgs;
       module = mkModule inputs;
       inherit (module) config;
     in
     {
-      inherit (config) formatter;
-      devShell = mkShell config;
+      formatter.${system} = config.formatter;
+      devShells.${system}.default = mkShell config pkgs;
     };
 
-  mkShell = config:
+  mkShell = config: pkgs:
     let
-      inherit (pkgs.lib) escapeShellArg;
       aliasCmds = map
         ({ name, definition }: "alias ${escapeShellArg name}=${escapeShellArg definition}")
         config.aliases;
@@ -20,15 +23,15 @@ let
     in
     pkgs.mkShell {
       inherit (config) packages;
-      LD_LIBRARY_PATH = pkgs.lib.makeLibraryPath config.libraries;
+      LD_LIBRARY_PATH = makeLibraryPath config.libraries;
       shellHook = aliasCmd;
     };
 
-  mkModule = { extraArgs, userModule }:
+  mkModule = { extraArgs, userModule, ... }:
     let
       toplevel = import ./modules/top-level.nix { inherit extraArgs; };
     in
-    pkgs.lib.evalModules {
+    evalModules {
       modules = [ toplevel userModule ];
     };
 
