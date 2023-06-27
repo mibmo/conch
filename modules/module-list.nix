@@ -1,6 +1,7 @@
 [
   ./flake-module.nix
   ./development/java.nix
+  ./development/python.nix
   ./development/rust.nix
   ./development/bevy.nix
   ./development/go.nix
