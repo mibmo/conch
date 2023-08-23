@@ -8,6 +8,7 @@ environment-specific shells to suit your project.
 
 ## Usage
 Setting up a generic environment for working with Rust is as simple as 
+running `nix flake init --template github:mibmo/conch#rust` or
 placing a `flake.nix` at the root of your project directory.
 ```nix
 {
