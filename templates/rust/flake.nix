@@ -1,4 +1,3 @@
-# Stable Rust
 {
   inputs = {
     nixpkgs.url = "nixpkgs/nixos-unstable";
@@ -7,6 +6,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
+
   outputs = { conch, ... }:
     conch.load [
       "aarch64-darwin"

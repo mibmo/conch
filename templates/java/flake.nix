@@ -1,4 +1,3 @@
-# Nightly Rust
 {
   inputs = {
     nixpkgs.url = "nixpkgs/nixos-unstable";
@@ -7,6 +6,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
+
   outputs = { conch, ... }:
     conch.load [
       "aarch64-darwin"
@@ -15,9 +15,6 @@
       "x86_64-linux"
     ]
       ({ ... }: {
-        development.rust = {
-          enable = true;
-          profile = "complete";
-        };
+        development.java.enable = true;
       });
 }

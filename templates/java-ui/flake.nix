@@ -1,4 +1,3 @@
-# Android environment with Java and Gradle
 {
   inputs = {
     nixpkgs.url = "nixpkgs/nixos-unstable";
@@ -7,15 +6,16 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
+
   outputs = { conch, ... }:
     conch.load [
+      "aarch64-darwin"
+      "riscv64-linux"
       "x86_64-darwin"
       "x86_64-linux"
     ]
-      ({ ... }: {
-        development = {
-          java.enable = true;
-          gradle.enable = true;
-        };
+      ({ pkgs, ... }: {
+        development.java.enable = true;
+        packages = [ pkgs.javaPackages.openjfx19 ];
       });
 }

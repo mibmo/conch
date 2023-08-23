@@ -52,5 +52,8 @@
     in
     {
       inherit load;
+      templates = builtins.mapAttrs
+        (name: _: { path = ./templates + "/${name}"; })
+        (builtins.readDir ./templates);
     } // load systems ({ pkgs, system, ... }: { });
 }
