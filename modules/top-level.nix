@@ -23,11 +23,11 @@ in
     };
 
     aliases = mkOption {
-      type = with types; listOf attrs;
-      default = [ ];
+      type = with types; attrs;
+      default = { };
       description = mdDoc ''
-        List of sets with form `{ name = str; definition = string; }`
-        that are added to the shell as aliases.
+        Attribute set that maps alias names to definitions
+        that are then added to the shell.
       '';
     };
 

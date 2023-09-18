@@ -17,11 +17,7 @@ let
 
   mkShell = config: pkgs:
     let
-      aliasCmds = map
-        ({ name, definition }: "alias ${escapeShellArg name}=${escapeShellArg definition};")
-        config.aliases;
-      aliasCmd = builtins.foldl' (acc: cmd: acc + cmd) "" aliasCmds;
-
+      aliasCmd = foldlAttrs (acc: name: value: acc + ''alias ${escapeShellArg name}=${escapeShellArg value};'') "" config.aliases;
       envCmd = foldlAttrs (acc: name: value: acc + ''export ${escapeShellArg name}=${escapeShellArg value};'') "" config.environment;
     in
     pkgs.mkShell {
