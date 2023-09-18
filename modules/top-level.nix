@@ -1,6 +1,9 @@
 { extraArgs }:
 { config, lib, pkgs, ... }:
-with lib; {
+let
+  inherit (lib) types mkOption mdDoc literalExpression;
+in
+{
   imports = import ./module-list.nix;
 
   options = {
@@ -25,6 +28,21 @@ with lib; {
       description = mdDoc ''
         List of sets with form `{ name = str; definition = string; }`
         that are added to the shell as aliases.
+      '';
+    };
+
+    environment = mkOption {
+      type = with types; attrs;
+      default = { };
+      description = mdDoc ''
+        Environment variables to set.
+      '';
+      example = literalExpression ''
+        {
+          run = "npm run start";
+          build = "npm run build";
+          ZEPHYR_SDK = pkgs.zephyr_sdk;
+        }
       '';
     };
   };

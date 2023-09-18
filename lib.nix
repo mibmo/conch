@@ -2,6 +2,7 @@
 let
   inherit (nixpkgs-lib) escapeShellArg makeLibraryPath;
   inherit (nixpkgs-lib.modules) evalModules;
+  inherit (nixpkgs-lib.attrsets) foldlAttrs;
 
   mkFlake = inputs@{ ... }:
     let
@@ -17,14 +18,16 @@ let
   mkShell = config: pkgs:
     let
       aliasCmds = map
-        ({ name, definition }: "alias ${escapeShellArg name}=${escapeShellArg definition}")
+        ({ name, definition }: "alias ${escapeShellArg name}=${escapeShellArg definition};")
         config.aliases;
       aliasCmd = builtins.foldl' (acc: cmd: acc + cmd) "" aliasCmds;
+
+      envCmd = foldlAttrs (acc: name: value: acc + ''export ${escapeShellArg name}=${escapeShellArg value};'') "" config.environment;
     in
     pkgs.mkShell {
       inherit (config) packages;
       LD_LIBRARY_PATH = makeLibraryPath config.libraries;
-      shellHook = aliasCmd;
+      shellHook = aliasCmd + envCmd;
     };
 
   mkModule = { extraArgs, userModule, ... }:
