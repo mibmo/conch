@@ -20,6 +20,7 @@ in
         "clippy"
         "rustc"
         "rustfmt"
+        "rust-src"
       ];
       description = mdDoc "Toolchain components to include toolchain.";
     };
