@@ -37,6 +37,3 @@ Open an [issue][issues-new]!
 ## Contributing
 Conch is far from complete and the internals are likely to change a lot,
 but contributions are always welcome! *(especially of the module variety!)*
-
-Conch follows [Conventional Commits](https://conventionalcommits.org) and any commits not adhering to the standard
-will have to be rebased.
