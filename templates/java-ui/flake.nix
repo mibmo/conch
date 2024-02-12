@@ -1,4 +1,6 @@
 {
+  description = "Java UI conch template";
+
   inputs = {
     nixpkgs.url = "nixpkgs/nixos-unstable";
     conch = {

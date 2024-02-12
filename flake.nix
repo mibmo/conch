@@ -53,7 +53,7 @@
     {
       inherit load;
       templates = builtins.mapAttrs
-        (name: _: { path = ./templates + "/${name}"; })
+        (name: _: rec { path = ./templates + "/${name}"; description = (import "${path}/flake.nix").description; })
         (builtins.readDir ./templates);
     } // load systems ({ pkgs, system, ... }: { });
 }

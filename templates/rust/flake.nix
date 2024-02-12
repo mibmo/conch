@@ -1,4 +1,6 @@
 {
+  description = "Rust conch template";
+
   inputs = {
     nixpkgs.url = "nixpkgs/nixos-unstable";
     conch = {

@@ -1,4 +1,6 @@
 {
+  description = "Node PNPM conch template";
+
   inputs = {
     nixpkgs.url = "nixpkgs/nixos-unstable";
     conch = {

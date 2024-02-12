@@ -1,4 +1,6 @@
 {
+  description = "LaTeX conch template";
+
   inputs = {
     nixpkgs.url = "nixpkgs/nixos-unstable";
     conch = {
