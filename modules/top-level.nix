@@ -49,6 +49,26 @@ in
         }
       '';
     };
+
+    # Note: should not be used by modules, only end users. Use `shellHooks` instead
+    shellHook = mkOption {
+      type = with types; lines;
+      default = "";
+      description = mdDoc ''
+        Shell script that runs after all other initialisation, including those in shellHooks.
+      '';
+    };
+
+    shellHooks = mkOption {
+      type = with types; listOf lines;
+      default = [ ];
+      example = [ "touch target/{debug,release}/*" ];
+      description = mdDoc ''
+        Snippets of shell code to execute when shell runs.
+        To change ordering, use nixpkgs' `lib.mk{Before,After,Order}`.
+        This is mainly for conch modules; shellHook should generally be used instead.
+      '';
+    };
   };
 
   config._module = {

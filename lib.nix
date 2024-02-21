@@ -3,6 +3,7 @@ let
   inherit (nixpkgs-lib) attrValues escapeShellArg makeLibraryPath;
   inherit (nixpkgs-lib.modules) evalModules;
   inherit (nixpkgs-lib.attrsets) foldlAttrs;
+  inherit (nixpkgs-lib.strings) concatStringsSep;
 
   mkFlake = inputs@{ ... }:
     let
@@ -16,15 +17,19 @@ let
     } // config.flake;
 
   mkShell = config: pkgs: system:
-    let
-      aliasCmd = foldlAttrs (acc: name: value: acc + ''alias ${escapeShellArg name}=${escapeShellArg value};'') "" config.aliases;
-      envCmd = foldlAttrs (acc: name: value: acc + ''export ${escapeShellArg name}=${escapeShellArg value};'') "" config.environment;
-    in
     pkgs.mkShell {
       packages = config.packages ++ [ config.formatter ];
       LD_LIBRARY_PATH = makeLibraryPath config.libraries;
       inputsFrom = attrValues (config.flake.packages.${system} or { });
-      shellHook = aliasCmd + envCmd;
+      shellHook =
+        let
+          aliasCmd = foldlAttrs (acc: name: value: acc + ''alias ${escapeShellArg name}=${escapeShellArg value};'') "" config.aliases;
+          envCmd = foldlAttrs (acc: name: value: acc + ''export ${escapeShellArg name}=${escapeShellArg value};'') "" config.environment;
+        in
+        concatStringsSep "\n" ([
+          aliasCmd
+          envCmd
+        ] ++ config.shellHooks ++ [ config.shellHook ]);
     };
 
   mkModule = { extraArgs, userModule, ... }:
