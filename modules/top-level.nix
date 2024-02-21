@@ -20,6 +20,10 @@ in
     formatter = mkOption {
       type = with types; package;
       default = pkgs.nixpkgs-fmt;
+      description = mdDoc ''
+        Package to use for formatting Nix code with `nix fmt`.
+        Also available in environment (as if it were added to the packages option)
+      '';
     };
 
     aliases = mkOption {

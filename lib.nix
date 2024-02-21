@@ -21,7 +21,7 @@ let
       envCmd = foldlAttrs (acc: name: value: acc + ''export ${escapeShellArg name}=${escapeShellArg value};'') "" config.environment;
     in
     pkgs.mkShell {
-      inherit (config) packages;
+      packages = config.packages ++ [ config.formatter ];
       LD_LIBRARY_PATH = makeLibraryPath config.libraries;
       inputsFrom = attrValues (config.flake.packages.${system} or { });
       shellHook = aliasCmd + envCmd;
