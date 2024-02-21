@@ -1,6 +1,6 @@
 { nixpkgs-lib }:
 let
-  inherit (nixpkgs-lib) escapeShellArg makeLibraryPath;
+  inherit (nixpkgs-lib) attrValues escapeShellArg makeLibraryPath;
   inherit (nixpkgs-lib.modules) evalModules;
   inherit (nixpkgs-lib.attrsets) foldlAttrs;
 
@@ -12,10 +12,10 @@ let
     in
     {
       formatter.${system} = config.formatter;
-      devShells.${system}.default = mkShell config pkgs;
+      devShells.${system}.default = mkShell config pkgs system;
     } // config.flake;
 
-  mkShell = config: pkgs:
+  mkShell = config: pkgs: system:
     let
       aliasCmd = foldlAttrs (acc: name: value: acc + ''alias ${escapeShellArg name}=${escapeShellArg value};'') "" config.aliases;
       envCmd = foldlAttrs (acc: name: value: acc + ''export ${escapeShellArg name}=${escapeShellArg value};'') "" config.environment;
@@ -23,6 +23,7 @@ let
     pkgs.mkShell {
       inherit (config) packages;
       LD_LIBRARY_PATH = makeLibraryPath config.libraries;
+      inputsFrom = attrValues (config.flake.packages.${system} or { });
       shellHook = aliasCmd + envCmd;
     };
 
