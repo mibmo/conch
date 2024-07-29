@@ -4,10 +4,6 @@
   inputs = {
     nixpkgs.url = "nixpkgs/nixos-unstable";
 
-    fenix = {
-      url = "github:nix-community/fenix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
     nixos-anywhere = {
       url = "github:numtide/nixos-anywhere";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -31,9 +27,7 @@
         let
           pkgs = import inputs.nixpkgs {
             inherit system;
-            overlays = [
-              inputs.fenix.overlays.default
-            ];
+            overlays = [ ];
           };
         in
         conch-lib.mkFlake {
