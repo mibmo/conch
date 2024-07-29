@@ -7,17 +7,23 @@ Leveraging the power of Nix modules for powerful
 environment-specific shells to suit your project.
 
 ## Usage
-Setting up a generic environment for working with Rust is as simple as 
-running `nix flake init --template github:mibmo/conch#rust` or
+Setting up a generic environment for working with Node is as simple as 
+running `nix flake init --template github:mibmo/conch#node-pnpm` or
 placing a `flake.nix` at the root of your project directory.
 ```nix
 {
-  inputs.conch.url = "github:mibmo/conch";
+  inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+    conch = {
+      url = "github:mibmo/conch";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+  };
   outputs = { conch, ... }:
     conch.load [ "x86_64-linux" ] ({ ... }: {
-      development.rust = {
+      development.node = {
         enable = true;
-        profile = "complete";
+        pnpm.enable = true;
       };
     });
 }
