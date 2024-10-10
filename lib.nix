@@ -17,7 +17,7 @@ let
     } // config.flake;
 
   mkShell = config: pkgs: system:
-    pkgs.mkShell {
+    config.mkShell {
       packages = config.packages ++ [ config.formatter ];
       LD_LIBRARY_PATH = makeLibraryPath config.libraries;
       inputsFrom = attrValues (config.flake.packages.${system} or { });

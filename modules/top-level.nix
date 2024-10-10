@@ -69,6 +69,18 @@ in
         This is mainly for conch modules; shellHook should generally be used instead.
       '';
     };
+
+    mkShell = mkOption {
+      # can't represent `f :: set -> drv` with option type system
+      type = with types; anything;
+      default = pkgs.mkShell;
+      example = [ "craneLib.devShell" ];
+      description = mdDoc ''
+        A function compatible with `pkgs.mkShell`, to allow arbitrary extending of use-case.
+
+        Specifically made for crane's `craneLib.devShell`.
+      '';
+    };
   };
 
   config._module = {
