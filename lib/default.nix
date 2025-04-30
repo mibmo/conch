@@ -12,8 +12,27 @@ let
 
   # exposed library functions
   conch = {
-    inherit mkFlake;
+    inherit
+      load
+      mkFlake
+      ;
   };
+
+  load = systems: module: builtins.foldl' lib.recursiveUpdate { } (map (loadModule module) systems);
+
+  loadModule =
+    module: system:
+    let
+      pkgs = import inputs.nixpkgs {
+        inherit system;
+        overlays = [ ];
+      };
+    in
+    lib.conch.mkFlake {
+      inherit system pkgs;
+      userModule = module;
+      extraArgs = { inherit pkgs inputs system; };
+    };
 
   mkFlake =
     inputs@{ ... }:

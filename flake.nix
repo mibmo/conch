@@ -19,28 +19,9 @@
         "x86_64-darwin"
         "x86_64-linux"
       ];
-
-      loadModule =
-        module: system:
-        let
-          pkgs = import inputs.nixpkgs {
-            inherit system;
-            overlays = [ ];
-          };
-        in
-        lib.conch.mkFlake {
-          inherit system pkgs;
-          userModule = module;
-          extraArgs = { inherit pkgs inputs system; };
-        };
-
-      # @todo: migrate to lib.recursiveUpdate
-      # also nixpkgs' lib is available through nixpkgs.lib; there's no need to import it
-      load = systems: module: builtins.foldl' lib.recursiveUpdate { } (map (loadModule module) systems);
     in
-    #load = systems: module: fold [ "devShell" "formatter" ] (loadModule module) systems;
     {
-      inherit load;
+      inherit (lib.conch) load;
     }
-    // load systems ({ pkgs, system, ... }: { });
+    // lib.conch.load systems ({ pkgs, system, ... }: { });
 }
