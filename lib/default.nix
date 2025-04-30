@@ -2,6 +2,7 @@
 let
   nixpkgs-lib = import inputs.nixpkgs-lib;
 
+  inherit (builtins) typeOf;
   inherit (nixpkgs-lib) attrValues escapeShellArg makeLibraryPath;
   inherit (nixpkgs-lib.modules) evalModules;
   inherit (nixpkgs-lib.attrsets) foldlAttrs recursiveUpdate;
@@ -15,6 +16,7 @@ let
     inherit
       defaultSystems
       load
+      loadForSystems
       mkFlake
       ;
   };
@@ -23,7 +25,12 @@ let
   # should generally cover as many standard systems as possible, hence using `flakeExposed`
   defaultSystems = nixpkgs-lib.systems.flakeExposed;
 
-  load = systems: module: builtins.foldl' lib.recursiveUpdate { } (map (loadModule module) systems);
+  # load conch. the main entrypoint
+  load = arg: if typeOf arg == "list" then loadForSystems arg else loadForSystems defaultSystems arg;
+
+  # load conch for a specific set of systems.
+  loadForSystems =
+    systems: module: builtins.foldl' lib.recursiveUpdate { } (map (loadModule module) systems);
 
   loadModule =
     module: system:
