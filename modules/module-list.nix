@@ -1,12 +1,3 @@
 [
   ./flake-module.nix
-  ./development/java.nix
-  ./development/python.nix
-  ./development/go.nix
-  ./development/gradle.nix
-  ./development/node
-  ./development/minecraft/fabric.nix
-  ./operations/morph.nix
-  ./operations/nixops.nix
-  ./operations/terranix.nix
 ]
