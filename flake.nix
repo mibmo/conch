@@ -6,7 +6,7 @@
   };
 
   outputs =
-    inputs @ { self, nixpkgs, ... }:
+    inputs@{ self, nixpkgs, ... }:
     let
       nixpkgs-lib = nixpkgs.lib;
       conch-lib = import ./lib.nix { inherit nixpkgs-lib; };
@@ -18,7 +18,8 @@
         "x86_64-linux"
       ];
 
-      loadModule = module: system:
+      loadModule =
+        module: system:
         let
           pkgs = import inputs.nixpkgs {
             inherit system;
@@ -33,13 +34,12 @@
 
       # @todo: migrate to lib.recursiveUpdate
       # also nixpkgs' lib is available through nixpkgs.lib; there's no need to import it
-      load = systems: module: builtins.foldl'
-        nixpkgs-lib.recursiveUpdate
-        { }
-        (map (loadModule module) systems);
+      load =
+        systems: module: builtins.foldl' nixpkgs-lib.recursiveUpdate { } (map (loadModule module) systems);
       #load = systems: module: fold [ "devShell" "formatter" ] (loadModule module) systems;
     in
     {
       inherit load;
-    } // load systems ({ pkgs, system, ... }: { });
+    }
+    // load systems ({ pkgs, system, ... }: { });
 }

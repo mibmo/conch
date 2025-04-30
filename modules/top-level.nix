@@ -1,7 +1,17 @@
 { extraArgs }:
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 let
-  inherit (lib) types mkOption mdDoc literalExpression;
+  inherit (lib)
+    types
+    mkOption
+    mdDoc
+    literalExpression
+    ;
 in
 {
   imports = import ./module-list.nix;

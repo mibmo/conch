@@ -5,7 +5,8 @@ let
   inherit (nixpkgs-lib.attrsets) foldlAttrs;
   inherit (nixpkgs-lib.strings) concatStringsSep;
 
-  mkFlake = inputs@{ ... }:
+  mkFlake =
+    inputs@{ ... }:
     let
       inherit (inputs) system pkgs;
       module = mkModule inputs;
@@ -14,30 +15,46 @@ let
     {
       formatter.${system} = config.formatter;
       devShells.${system}.default = mkShell config pkgs system;
-    } // config.flake;
+    }
+    // config.flake;
 
-  mkShell = config: pkgs: system:
+  mkShell =
+    config: pkgs: system:
     config.mkShell {
       packages = config.packages ++ [ config.formatter ];
       LD_LIBRARY_PATH = makeLibraryPath config.libraries;
       inputsFrom = attrValues (config.flake.packages.${system} or { });
       shellHook =
         let
-          aliasCmd = foldlAttrs (acc: name: value: acc + ''alias ${escapeShellArg name}=${escapeShellArg value};'') "" config.aliases;
-          envCmd = foldlAttrs (acc: name: value: acc + ''export ${escapeShellArg name}=${escapeShellArg value};'') "" config.environment;
+          aliasCmd = foldlAttrs (
+            acc: name: value:
+            acc + ''alias ${escapeShellArg name}=${escapeShellArg value};''
+          ) "" config.aliases;
+          envCmd = foldlAttrs (
+            acc: name: value:
+            acc + ''export ${escapeShellArg name}=${escapeShellArg value};''
+          ) "" config.environment;
         in
-        concatStringsSep "\n" ([
-          aliasCmd
-          envCmd
-        ] ++ config.shellHooks ++ [ config.shellHook ]);
+        concatStringsSep "\n" (
+          [
+            aliasCmd
+            envCmd
+          ]
+          ++ config.shellHooks
+          ++ [ config.shellHook ]
+        );
     };
 
-  mkModule = { extraArgs, userModule, ... }:
+  mkModule =
+    { extraArgs, userModule, ... }:
     let
       toplevel = import ./modules/top-level.nix { inherit extraArgs; };
     in
     evalModules {
-      modules = [ toplevel userModule ];
+      modules = [
+        toplevel
+        userModule
+      ];
     };
 
   lib = {

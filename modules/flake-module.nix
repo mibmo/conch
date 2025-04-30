@@ -1,4 +1,10 @@
-{ config, lib, inputs, system, ... }:
+{
+  config,
+  lib,
+  inputs,
+  system,
+  ...
+}:
 with lib;
 let
   cfg = config.flake;
