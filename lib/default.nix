@@ -89,7 +89,7 @@ let
   mkModule =
     { userModule, system, ... }:
     evalModules {
-      modules = import ../modules/module-list.nix ++ [ userModule ];
+      modules = import ../modules ++ [ userModule ];
       specialArgs = { inherit inputs system; };
     };
 in
