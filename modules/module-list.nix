@@ -1,5 +1,5 @@
 [
-  ./flake-module.nix
+  ./flake.nix
   ./nixpkgs.nix
   ./shell.nix
 ]
