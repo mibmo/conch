@@ -1,18 +1,17 @@
 {
-  config,
   lib,
-  inputs,
-  system,
   ...
 }:
-with lib;
 let
-  cfg = config.flake;
+  inherit (lib)
+    mkOption
+    types
+    ;
 in
 {
   options.flake = mkOption {
     type = types.attrs;
-    description = lib.mdDoc "Arbitrary flake configuration.";
+    description = "Arbitrary flake configuration.";
     default = { };
   };
 }
