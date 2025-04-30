@@ -2,15 +2,15 @@
   config,
   inputs,
   lib,
-  system,
   pkgs,
+  system,
   ...
 }:
 let
   cfg = config.nixpkgs;
 
   inherit (lib) types;
-  inherit (lib.options) mergeOneOption mkOption literalExpression;
+  inherit (lib.options) literalExpression mergeOneOption mkOption;
   inherit (lib.trivial) isFunction;
   inherit (lib.types) mkOptionType;
 
