@@ -13,10 +13,15 @@ let
   # exposed library functions
   conch = {
     inherit
+      defaultSystems
       load
       mkFlake
       ;
   };
+
+  # default set of systems to configure conch for.
+  # should generally cover as many standard systems as possible, hence using `flakeExposed`
+  defaultSystems = nixpkgs-lib.systems.flakeExposed;
 
   load = systems: module: builtins.foldl' lib.recursiveUpdate { } (map (loadModule module) systems);
 

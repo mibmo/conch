@@ -12,16 +12,9 @@
     inputs@{ ... }:
     let
       lib = import ./lib { inherit inputs; };
-
-      systems = [
-        "aarch64-darwin"
-        "riscv64-linux"
-        "x86_64-darwin"
-        "x86_64-linux"
-      ];
     in
     {
       inherit (lib.conch) load;
     }
-    // lib.conch.load systems ({ pkgs, system, ... }: { });
+    // lib.conch.load lib.conch.defaultSystems ({ pkgs, system, ... }: { });
 }
