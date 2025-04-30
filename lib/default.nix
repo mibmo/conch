@@ -1,6 +1,7 @@
 { inputs, ... }:
 let
-  nixpkgs-lib = inputs.nixpkgs.lib;
+  nixpkgs-lib = import inputs.nixpkgs-lib;
+
   inherit (nixpkgs-lib) attrValues escapeShellArg makeLibraryPath;
   inherit (nixpkgs-lib.modules) evalModules;
   inherit (nixpkgs-lib.attrsets) foldlAttrs recursiveUpdate;
