@@ -1,4 +1,3 @@
-{ extraArgs }:
 {
   config,
   lib,
@@ -14,8 +13,6 @@ let
     ;
 in
 {
-  imports = import ./module-list.nix;
-
   options = {
     packages = mkOption {
       type = with types; listOf package;
@@ -91,9 +88,5 @@ in
         Specifically made for crane's `craneLib.devShell`.
       '';
     };
-  };
-
-  config._module = {
-    args = extraArgs;
   };
 }

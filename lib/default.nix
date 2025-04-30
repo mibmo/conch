@@ -88,14 +88,9 @@ let
 
   mkModule =
     { extraArgs, userModule, ... }:
-    let
-      toplevel = import ../modules/top-level.nix { inherit extraArgs; };
-    in
     evalModules {
-      modules = [
-        toplevel
-        userModule
-      ];
+      modules = import ../modules/module-list.nix ++ [ userModule ];
+      specialArgs = extraArgs;
     };
 in
 lib
