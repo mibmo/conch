@@ -61,28 +61,28 @@ let
 
   mkShell =
     config: pkgs: system:
-    config.mkShell {
-      packages = config.packages ++ [ config.formatter ];
-      LD_LIBRARY_PATH = makeLibraryPath config.libraries;
+    config.shell.mkShell {
+      packages = config.shell.packages ++ [ config.shell.formatter ];
+      LD_LIBRARY_PATH = makeLibraryPath config.shell.libraries;
       inputsFrom = attrValues (config.flake.packages.${system} or { });
       shellHook =
         let
           aliasCmd = foldlAttrs (
             acc: name: value:
             acc + ''alias ${escapeShellArg name}=${escapeShellArg value};''
-          ) "" config.aliases;
+          ) "" config.shell.aliases;
           envCmd = foldlAttrs (
             acc: name: value:
             acc + ''export ${escapeShellArg name}=${escapeShellArg value};''
-          ) "" config.environment;
+          ) "" config.shell.environment;
         in
         concatStringsSep "\n" (
           [
             aliasCmd
             envCmd
           ]
-          ++ config.shellHooks
-          ++ [ config.shellHook ]
+          ++ config.shell.hooks
+          ++ [ config.shell.hook ]
         );
     };
 
