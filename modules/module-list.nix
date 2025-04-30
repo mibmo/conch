@@ -8,6 +8,5 @@
   ./development/minecraft/fabric.nix
   ./operations/morph.nix
   ./operations/nixops.nix
-  ./operations/nixos-anywhere.nix
   ./operations/terranix.nix
 ]
