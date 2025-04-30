@@ -2,7 +2,7 @@
   description = "Environments tailored to your projects' needs";
 
   inputs = {
-    nixpkgs.url = "nixpkgs/nixos-unstable";
+    nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
   };
 
   outputs =
@@ -36,8 +36,8 @@
       # also nixpkgs' lib is available through nixpkgs.lib; there's no need to import it
       load =
         systems: module: builtins.foldl' nixpkgs-lib.recursiveUpdate { } (map (loadModule module) systems);
-      #load = systems: module: fold [ "devShell" "formatter" ] (loadModule module) systems;
     in
+    #load = systems: module: fold [ "devShell" "formatter" ] (loadModule module) systems;
     {
       inherit load;
     }
