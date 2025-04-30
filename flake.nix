@@ -16,5 +16,4 @@
     {
       inherit (lib.conch) load;
     }
-    // lib.conch.load lib.conch.defaultSystems ({ pkgs, system, ... }: { });
 }
