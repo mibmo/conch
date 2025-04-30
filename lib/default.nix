@@ -43,14 +43,14 @@ let
     lib.conch.mkFlake {
       inherit system pkgs;
       userModule = module;
-      extraArgs = { inherit pkgs inputs system; };
+      extraArgs = { inherit inputs system; };
     };
 
   mkFlake =
-    inputs@{ ... }:
+    args@{ ... }:
     let
-      inherit (inputs) system pkgs;
-      module = mkModule inputs;
+      inherit (args) system pkgs;
+      module = mkModule args;
       inherit (module) config;
     in
     {
@@ -87,10 +87,10 @@ let
     };
 
   mkModule =
-    { extraArgs, userModule, ... }:
+    { userModule, system, ... }:
     evalModules {
       modules = import ../modules/module-list.nix ++ [ userModule ];
-      specialArgs = extraArgs;
+      specialArgs = { inherit inputs system; };
     };
 in
 lib
