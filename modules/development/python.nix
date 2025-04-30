@@ -8,8 +8,8 @@ in
     enable = mkEnableOption "python";
     package = mkOption {
       type = types.package;
-      default = pkgs.python3Full;
-      defaultText = "Python 3 Full";
+      default = pkgs.python3;
+      defaultText = "Python 3";
       description = lib.mdDoc ''
         Python package to use. Typical values are pkgs.python311 or pkgs.python310.
       '';
