@@ -1,9 +1,18 @@
-{ nixpkgs-lib }:
+{ inputs, ... }:
 let
+  nixpkgs-lib = inputs.nixpkgs.lib;
   inherit (nixpkgs-lib) attrValues escapeShellArg makeLibraryPath;
   inherit (nixpkgs-lib.modules) evalModules;
-  inherit (nixpkgs-lib.attrsets) foldlAttrs;
+  inherit (nixpkgs-lib.attrsets) foldlAttrs recursiveUpdate;
   inherit (nixpkgs-lib.strings) concatStringsSep;
+
+  # combined library
+  lib = recursiveUpdate nixpkgs-lib { inherit conch; };
+
+  # exposed library functions
+  conch = {
+    inherit mkFlake;
+  };
 
   mkFlake =
     inputs@{ ... }:
@@ -48,7 +57,7 @@ let
   mkModule =
     { extraArgs, userModule, ... }:
     let
-      toplevel = import ./modules/top-level.nix { inherit extraArgs; };
+      toplevel = import ../modules/top-level.nix { inherit extraArgs; };
     in
     evalModules {
       modules = [
@@ -56,9 +65,5 @@ let
         userModule
       ];
     };
-
-  lib = {
-    inherit mkFlake;
-  };
 in
 lib

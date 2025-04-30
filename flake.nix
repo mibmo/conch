@@ -6,10 +6,9 @@
   };
 
   outputs =
-    inputs@{ self, nixpkgs, ... }:
+    inputs@{ ... }:
     let
-      nixpkgs-lib = nixpkgs.lib;
-      conch-lib = import ./lib.nix { inherit nixpkgs-lib; };
+      lib = import ./lib { inherit inputs; };
 
       systems = [
         "aarch64-darwin"
@@ -26,7 +25,7 @@
             overlays = [ ];
           };
         in
-        conch-lib.mkFlake {
+        lib.conch.mkFlake {
           inherit system pkgs;
           userModule = module;
           extraArgs = { inherit pkgs inputs system; };
@@ -34,8 +33,7 @@
 
       # @todo: migrate to lib.recursiveUpdate
       # also nixpkgs' lib is available through nixpkgs.lib; there's no need to import it
-      load =
-        systems: module: builtins.foldl' nixpkgs-lib.recursiveUpdate { } (map (loadModule module) systems);
+      load = systems: module: builtins.foldl' lib.recursiveUpdate { } (map (loadModule module) systems);
     in
     #load = systems: module: fold [ "devShell" "formatter" ] (loadModule module) systems;
     {
