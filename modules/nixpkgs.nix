@@ -10,7 +10,10 @@ let
   cfg = config.nixpkgs;
 
   inherit (lib) types;
+  inherit (lib.attrsets) optionalAttrs recursiveUpdate;
+  inherit (lib.lists) any foldl;
   inherit (lib.options) literalExpression mergeOneOption mkOption;
+  inherit (lib.strings) getName match;
   inherit (lib.trivial) isFunction;
   inherit (lib.types) mkOptionType;
 
@@ -94,10 +97,46 @@ in
         Duplicate of NixOS' `nixpkgs.overlays`
       '';
     };
+
+    permittedInsecurePatterns = mkOption {
+      type = with types; listOf str;
+      default = [ ];
+      example = [
+        "python(2|27)"
+      ];
+      description = ''
+        Regex patterns of package names that are permitted to be insecure.
+
+        Overrides `nixpkgs.config.allowUnfreePredicate` when non-empty.
+      '';
+    };
+
+    permittedUnfreePatterns = mkOption {
+      type = with types; listOf str;
+      default = [ ];
+      example = [
+        "lightburn"
+        "osu-lazer(-bin)?"
+      ];
+      description = ''
+        Regex patterns of package names that are permitted to be unfree.
+
+        Overrides `nixpkgs.config.allowUnfreePredicate` when non-empty.
+      '';
+    };
   };
 
-  config._module.args.pkgs = import inputs.nixpkgs {
-    inherit system;
-    inherit (cfg) config overlays;
+  config = {
+    _module.args.pkgs = import inputs.nixpkgs {
+      inherit system;
+      inherit (cfg) config overlays;
+    };
+
+    nixpkgs.config = {
+      ${if cfg.permittedInsecurePatterns != [ ] then "allowInsecurePredicate" else null} =
+        pkg: any (pattern: match pattern (getName pkg) != null) cfg.permittedInsecurePatterns;
+      ${if cfg.permittedUnfreePatterns != [ ] then "allowUnfreePredicate" else null} =
+        pkg: any (pattern: match pattern (getName pkg) != null) cfg.permittedUnfreePatterns;
+    };
   };
 }
