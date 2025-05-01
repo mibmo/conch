@@ -15,5 +15,5 @@
     in
     {
       inherit (lib.conch) load;
-    }
+    };
 }
