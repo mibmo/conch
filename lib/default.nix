@@ -90,7 +90,7 @@ let
     { userModule, system, ... }:
     evalModules {
       modules = import ../modules ++ [ userModule ];
-      specialArgs = { inherit inputs system; };
+      specialArgs = { inherit inputs lib system; };
     };
 in
 lib
