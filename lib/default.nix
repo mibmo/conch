@@ -18,8 +18,11 @@ let
       load
       loadForSystems
       mkFlake
+      types
       ;
   };
+
+  types = import ./types.nix { inherit inputs lib; };
 
   # default set of systems to configure conch for.
   # should generally cover as many standard systems as possible, hence using `flakeExposed`
