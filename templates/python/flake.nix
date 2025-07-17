@@ -3,7 +3,7 @@
     nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
 
     conch = {
-      url = "github:mibmo/conch/modularity";
+      url = "github:mibmo/conch";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
