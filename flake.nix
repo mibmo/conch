@@ -15,5 +15,10 @@
     in
     {
       inherit (lib.conch) load;
+      lib = lib.conch;
+      templates.python = {
+        description = "Environment for Python development";
+        path = ./templates/python;
+      };
     };
 }
