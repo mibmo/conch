@@ -69,7 +69,7 @@ in
       description = ''
         Snippets of shell code to execute when shell runs.
         To change ordering, use nixpkgs' `lib.mk{Before,After,Order}`.
-        This is mainly for conch modules; shellHook should generally be used instead.
+        This is generally for conch modules; use `shell.hook` if an end user.
       '';
     };
 
