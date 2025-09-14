@@ -57,7 +57,7 @@ let
       inherit (module) config;
     in
     {
-      formatter.${system} = config.formatter;
+      formatter.${system} = config.shell.formatter;
       devShells.${system}.default = mkShell config pkgs system;
     }
     // config.flake;
