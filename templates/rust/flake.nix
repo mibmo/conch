@@ -7,14 +7,14 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    conch-fenix.url = "github:mibmo/conch-fenix";
+    conch-rust.url = "github:mibmo/conch-rust";
   };
 
   outputs =
     inputs@{ conch, ... }:
     conch.load {
       imports = [
-        inputs.conch-fenix.conchModules.rust
+        inputs.conch-rust.conchModules.rust
       ];
 
       rust.enable = true;
