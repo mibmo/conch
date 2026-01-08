@@ -83,5 +83,16 @@ in
         Specifically made for crane's `craneLib.devShell`.
       '';
     };
+
+    extraOpts = mkOption {
+      type = with types; attrs;
+      default = { };
+      example = {
+        "NIX_NO_SELF_RPATH" = true;
+      };
+      description = ''
+        Escape hatch to pass extra options to mkShell.
+      '';
+    };
   };
 }
