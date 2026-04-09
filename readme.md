@@ -159,8 +159,3 @@ Open an [issue][issues-new]!
 
 ## Contributing
 Conch is far from complete and the internals are likely to change a lot, but contributions are always welcome! _(especially of the module variety!)_
-
-<div style="font-size: 0.4em">
-<h2>What's in the name?</h2>
-<em>shell.</em>
-</div>
