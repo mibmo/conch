@@ -142,7 +142,7 @@ All `flake` options are recursively merged across the systems, so for a systems 
 The [options search][search] isn't quite there yet, so for now you'll have to scour the source code.
 
 ## Templates
-To get started quickly, use any of the available templates with `nix flake init --template=gh:mibmo/conch#<template>`.
+To get started quickly, use any of the available templates with `nix flake init --template=github:mibmo/conch#<template>`.
 These are the available templates;
 - [`python`][template-python]: Python 3 using the [`conch-python`][module-python] module.
 - [`rust`][template-rust]: Rust setup using the [`conch-rust`][module-rust] module. Allow configuring targets, components/profiles, and toolchains.
