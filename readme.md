@@ -122,7 +122,7 @@ All `flake` options are recursively merged across the systems, so for a systems 
 }
 ```
 
-> [!note]
+> [!warning]
 > It is _not_ recommended to try merging an attribute set with the output of `conch.load`.
 > It'll probably work, but it's mighty fragile.
 > At the very least, use [`recursiveUpdate`](https://noogle.dev/f/lib/attrsets/recursiveUpdate) if you do decide to go this route.
