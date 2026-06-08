@@ -16,5 +16,11 @@
     {
       inherit (conch) configure;
       lib = conch;
+      templates = {
+        default = {
+          description = "Default template suitable as starting point";
+          path = ./templates/default;
+        };
+      };
     };
 }
