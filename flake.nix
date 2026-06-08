@@ -16,15 +16,5 @@
     {
       inherit (conch) configure;
       lib = conch;
-      templates = {
-        python = {
-          description = "Environment for Python development";
-          path = ./templates/python;
-        };
-        rust = {
-          description = "Environment for Rust development";
-          path = ./templates/rust;
-        };
-      };
     };
 }
