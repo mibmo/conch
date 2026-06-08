@@ -1,6 +1,5 @@
 {
   lib,
-  pkgs,
   ...
 }:
 let
@@ -11,9 +10,9 @@ let
     ;
 in
 {
-  options.shell = {
+  options = {
     aliases = mkOption {
-      type = with types; attrs;
+      type = with types; attrsOf str;
       default = { };
       description = ''
         Attribute set that maps alias names to definitions
@@ -31,26 +30,19 @@ in
       default = [ ];
     };
 
-    formatter = mkOption {
-      type = with types; package;
-      default = pkgs.nixfmt-tree;
-      description = ''
-        Package to use for formatting Nix code with `nix fmt`.
-        Also available in environment (as if it were added to the packages option)
-      '';
-    };
-
     environment = mkOption {
       type = with types; attrs;
       default = { };
       description = ''
         Environment variables to set.
       '';
-      example = {
-        run = "npm run start";
-        build = "npm run build";
-        ZEPHYR_SDK = pkgs.zephyr_sdk;
-      };
+      example = literalExpression ''
+        {
+          run = "npm run start";
+          build = "npm run build";
+          ZEPHYR_SDK = pkgs.zephyr_sdk;
+        }
+      '';
     };
 
     # Note: should not be used by modules, only end users. Use `hooks` instead
@@ -74,8 +66,8 @@ in
     };
 
     mkShell = mkOption {
-      type = with types; anything;
-      default = pkgs.mkShell;
+      type = with types; nullOr (functionTo package);
+      default = null;
       example = literalExpression "craneLib.devShell";
       description = ''
         A function compatible with `pkgs.mkShell`, to allow arbitrary extending of use-case.

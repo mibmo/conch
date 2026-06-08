@@ -9,13 +9,13 @@
   };
 
   outputs =
-    inputs@{ ... }:
+    inputs:
     let
-      lib = import ./lib { inherit inputs; };
+      conch = import ./lib { inherit inputs; };
     in
     {
-      inherit (lib.conch) load;
-      lib = lib.conch;
+      inherit (conch) configure;
+      lib = conch;
       templates = {
         python = {
           description = "Environment for Python development";
