@@ -1,23 +1,29 @@
 {
+  conch,
   config,
   inputs,
   lib,
-  pkgs,
-  system,
   ...
 }:
 let
   cfg = config.nixpkgs;
 
   inherit (lib) types;
-  inherit (lib.attrsets) optionalAttrs recursiveUpdate;
-  inherit (lib.lists) any foldl;
+  inherit (lib.lists) any;
   inherit (lib.options) literalExpression mergeOneOption mkOption;
   inherit (lib.strings) getName match;
   inherit (lib.trivial) isFunction;
   inherit (lib.types) mkOptionType;
 
-  # lifted from nixos; https://github.com/NixOS/nixpkgs/blob/46e634be05ce9dc6d4db8e664515ba10b78151ae/nixos/modules/misc/nixpkgs.nix
+  overlayType = mkOptionType {
+    name = "nixpkgs-overlay";
+    description = "nixpkgs overlay";
+    check = isFunction;
+    merge = mergeOneOption;
+  };
+
+  # mostly lifted from nixos; https://github.com/NixOS/nixpkgs/blob/46e634be05ce9dc6d4db8e664515ba10b78151ae/nixos/modules/misc/nixpkgs.nix
+  # see comments for differences
 
   isConfig = x: builtins.isAttrs x || lib.isFunction x;
 
@@ -26,10 +32,14 @@ let
   mergeConfig =
     lhs_: rhs_:
     let
-      lhs = optCall lhs_ { inherit pkgs; };
-      rhs = optCall rhs_ { inherit pkgs; };
+      # NOTE: the difference between this and nixpkgs' implementation is that `pkgs` aren't passed here
+      lhs = optCall lhs_ { inherit lib; };
+      rhs = optCall rhs_ { inherit lib; };
     in
     lib.recursiveUpdate lhs rhs
+    // lib.optionalAttrs (lhs ? allowUnfreePackages) {
+      allowUnfreePackages = lhs.allowUnfreePackages ++ (lib.attrByPath [ "allowUnfreePackages" ] [ ] rhs);
+    }
     // lib.optionalAttrs (lhs ? packageOverrides) {
       packageOverrides =
         pkgs:
@@ -53,16 +63,18 @@ let
       traceXIfNot isConfig;
     merge = args: lib.foldr (def: mergeConfig def.value) { };
   };
-
-  overlayType = mkOptionType {
-    name = "nixpkgs-overlay";
-    description = "nixpkgs overlay";
-    check = isFunction;
-    merge = mergeOneOption;
-  };
 in
 {
   options.nixpkgs = {
+    final = lib.mkOption {
+      type = types.attrs;
+      internal = true;
+      description = "Internal option used to write package set with changes applied";
+      apply = conch.applySystemsWithGenerator (
+        system: options: import inputs.nixpkgs (options // { inherit system; })
+      );
+    };
+
     config = lib.mkOption {
       default = { };
       example = lib.literalExpression ''
@@ -126,13 +138,9 @@ in
     };
   };
 
-  config = {
-    _module.args.pkgs = import inputs.nixpkgs {
-      inherit system;
-      inherit (cfg) config overlays;
-    };
-
-    nixpkgs.config = {
+  config.nixpkgs = {
+    final = { inherit (config.nixpkgs) config overlays; };
+    config = {
       ${if cfg.permittedInsecurePatterns != [ ] then "allowInsecurePredicate" else null} =
         pkg: any (pattern: match pattern (getName pkg) != null) cfg.permittedInsecurePatterns;
       ${if cfg.permittedUnfreePatterns != [ ] then "allowUnfreePredicate" else null} =

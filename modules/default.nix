@@ -18,6 +18,10 @@ let
 
 in
 {
+  imports = [
+    ./nixpkgs.nix
+  ];
+
   options = {
     systems = mkOption {
       type = with lib.types; listOf (strMatching "[a-z0-9_]+-[a-z0-9]+");
@@ -98,7 +102,7 @@ in
       system: maker:
       maker {
         inherit system;
-        pkgs = inputs.nixpkgs.legacyPackages.${system};
+        pkgs = config.nixpkgs.final.${system};
       };
   };
 }
