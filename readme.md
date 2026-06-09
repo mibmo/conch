@@ -7,13 +7,12 @@
 [template-rust]: https://github.com/mibmo/conch/tree/main/templates/rust
 
 # conch 🐚
-Nix module system for configuring your dev shell.
+Nix module system for configuring your flakes and dev shells.
 
 ## Usage
-The entrypoint is the `conch.load` function, which takes a module and optionally a list of systems;
-either call as `conch.load <module>` or `conch.load [ <system> ... ] <module>` (when omitted, the systems defaults to [`lib.systems.flakeExposed`](https://github.com/NixOS/nixpkgs/blob/96e87bd250d5f4f3447b87ab7e94689ea19e0c2a/lib/systems/default.nix#L51-L59)).
+The entrypoint is the `conch.configure` function which takes a module.
 
-In general, usage consists of simply adding Conch to your flake inputs and calling `conch.load`, then entering the environment with `nix develop` -- but take a look instead at the examples for a _much_ clearer picture.
+In general usage consists simply of adding Conch to your flake inputs and calling `conch.configure`, then entering the environment with `nix develop` -- but take a look instead at the examples for a _much_ clearer picture.
 
 > [!important]
 > Conch's nixpkgs input should follow your own!
@@ -21,50 +20,32 @@ In general, usage consists of simply adding Conch to your flake inputs and calli
 > The templates follow best practices and should (generally) be referred to.
 
 ## Examples
-### Python
-Python has a corresponding [Conch module][module-python], imported just like any other Nix module, which provides an easier way to set up Python. (the following is taken from the [Python template][template-python])
-```nix
-{
-  inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
-    conch = {
-      url = "github:mibmo/conch";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-    conch-python.url = "github:mibmo/conch-python";
-  };
-
-  outputs =
-    inputs@{ conch, ... }:
-    conch.load {
-      imports = [
-        inputs.conch-python.conchModules.python
-      ];
-
-      python.enable = true;
-    };
-}
-```
-
 ### Node with pnpm
 This example shows passing a _"function module"_ into `conch.load`, just as you would when creating modules or in general configuring NixOS.
 ```nix
 {
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
+
     conch = {
       url = "github:mibmo/conch";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
 
-  outputs = { conch, ... }:
-    conch.load  ({ pkgs, ... }: {
-      shell.packages = with pkgs; [
-        nodejs
-        pnpm
-      ];
-    });
+  outputs =
+    { conch, ... }:
+    conch.configure {
+      devShells.default =
+        { pkgs, ... }:
+        {
+          aliases.hello = "echo hello from ${pkgs.stdenv.hostPlatform.system}";
+          packages = with pkgs; [
+            nodejs
+            pnpm
+          ];
+        };
+    };
 }
 ```
 
@@ -75,77 +56,65 @@ This example shows making packages available as you would normally.
 {
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
+
     conch = {
       url = "github:mibmo/conch";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
 
-  outputs = { conch, ... }:
-    conch.load  ({ system, pkgs, ... }: {
-      flake = {
-        formatter.${system} = pkgs.nixpkgs-fmt;
-        packages.${system} = rec {
-          default = hello;
-          hello = pkgs.hello;
+  outputs =
+    { conch, ... }:
+    conch.configure {
+      packages =
+        { pkgs, ... }:
+        rec {
+          default = pkgs.hello;
+          hello = default;
         };
-      };
-    });
-}
-```
-
-All `flake` options are recursively merged across the systems, so for a systems input of `[ "x86_64-linux" "riscv64-linux" "aarch64-darwin" ]` this would be (roughly) equivalent to
-```nix
-{
-  inputs.nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
-  outputs = { nixpkgs }: {
-    formatter = {
-      x86_64-linux = nixpkgs.legacyPackages."x86_64-linux".nixpkgs-fmt;
-      riscv64-linux = nixpkgs.legacyPackages."riscv64-linux".nixpkgs-fmt;
-      aarch64-darwin = nixpkgs.legacyPackages."aarch64-linux".nixpkgs-fmt;
+      formatter = { pkgs, ... }: pkgs.nixfmt-tree;
     };
-    packages = {
-      x86_64-linux = rec {
-        default = hello;
-        hello = nixpkgs.legacyPackages."x86_64-linux".hello;
-      };
-      riscv64-linux = rec {
-        default = hello;
-        hello = nixpkgs.legacyPackages."riscv64-linux".hello;
-      };
-      aarch64-darwin = rec {
-        default = hello;
-        hello = nixpkgs.legacyPackages."aarch64-darwin".hello;
-      };
-    };
-  };
 }
 ```
 
 > [!warning]
-> It is _not_ recommended to try merging an attribute set with the output of `conch.load`.
+> It is _not_ recommended to try merging an attribute set with the output of `conch.configure`.
 > It'll probably work, but it's mighty fragile.
 > At the very least, use [`recursiveUpdate`](https://noogle.dev/f/lib/attrsets/recursiveUpdate) if you do decide to go this route.
 
 > [!tip]
-> To do per-system configuration, consider using an if expression or the following pattern;
+> To configure per-system values, consider using an if expression or the following pattern;
 > ```nix
 > <option> =
+>   { system, ... }:
+>   let
+>     value = {
+>       <system1> = <value1>;
+>       <system2> = <value2>;
+>     }
+>     .${system} or <default>;
+>   in
 >   {
->     <system1> = <value1>;
->     <system2> = <value2>;
+>     <shared_config> = <shared>;
+>     <per_system> = value;
 >   }
->   .${system} or <default>
+> ```
+> You can also just write the option as you normally would with flakes, e.g.
+> ```nix
+> <option> = {
+>   <system1> = <value1>;
+>   <system2> = <value2>;
+> }
 > ```
 
 ## Modules
 The [options search][search] isn't quite there yet, so for now you'll have to scour the source code.
+Start with the `modules` directory.
 
 ## Templates
 To get started quickly, use any of the available templates with `nix flake init --template=github:mibmo/conch#<template>`.
-These are the available templates;
 - [`python`][template-python]: Python 3 using the [`conch-python`][module-python] module.
-- [`rust`][template-rust]: Rust setup using the [`conch-rust`][module-rust] module. Allow configuring targets, components/profiles, and toolchains.
+- [`rust`][template-rust]: Rust setup using the [`conch-rust`][module-rust] module. Allows configuring targets, components/profiles, and toolchains.
 
 ### Todo!
 These are some templates and/or modules that'll hopefully get made eventually;
