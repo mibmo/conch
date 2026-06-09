@@ -1,7 +1,6 @@
 {
   conch,
   config,
-  inputs,
   lib,
   ...
 }:
@@ -42,7 +41,7 @@ in
       apply = conch.applySystemsWithGenerator (
         system:
         let
-          pkgs = config.nixpkgs.final.${system};
+          args = conch.makeArgs system;
           applyShell =
             shell:
             {
@@ -75,8 +74,8 @@ in
         mapAttrs (
           _: shell:
           let
-            config = shell { inherit system pkgs; };
-            mkShell = if config.mkShell != null then config.mkShell else pkgs.mkShell;
+            config = shell args;
+            mkShell = if config.mkShell != null then config.mkShell else args.pkgs.mkShell;
           in
           mkShell (applyShell config)
         )
@@ -98,11 +97,10 @@ in
   config._module.args.conch = {
     applySystemsWithGenerator =
       maker: value: listToAttrs (map (system: nameValuePair system (maker system value)) config.systems);
-    genericGenerator =
-      system: maker:
-      maker {
-        inherit system;
-        pkgs = config.nixpkgs.final.${system};
-      };
+    genericGenerator = system: maker: maker (conch.makeArgs system);
+    makeArgs = system: {
+      inherit system lib;
+      pkgs = config.nixpkgs.final.${system};
+    };
   };
 }
