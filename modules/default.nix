@@ -42,7 +42,7 @@ in
       apply = conch.applySystemsWithGenerator (
         system:
         let
-          pkgs = inputs.nixpkgs.legacyPackages.${system};
+          pkgs = config.nixpkgs.final.${system};
           applyShell =
             shell:
             {
