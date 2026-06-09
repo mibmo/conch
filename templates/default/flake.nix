@@ -24,7 +24,7 @@
       devShells.default =
         { pkgs, ... }:
         {
-          aliases.run = "hello --traditiona";
+          aliases.run = "hello --traditional";
           packages = with pkgs; [
             hello
           ];
