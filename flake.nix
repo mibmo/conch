@@ -21,6 +21,10 @@
           description = "Default template suitable as starting point";
           path = ./templates/default;
         };
+        nixpkgs = {
+          description = "Template showing nixpkgs overlay being applied";
+          path = ./templates/nixpkgs;
+        };
       };
     };
 }
