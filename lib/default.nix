@@ -2,12 +2,26 @@
 let
   lib = import inputs.nixpkgs-lib;
 
+  inherit (lib.options) mergeOneOption;
+  inherit (lib.trivial) isFunction;
+  inherit (lib.types) mkOptionType;
+
   # exposed library functions
   conch = {
     inherit
       configure
       setIf
+      types
       ;
+  };
+
+  types = {
+    overlay = mkOptionType {
+      name = "nixpkgs-overlay";
+      description = "nixpkgs overlay";
+      check = isFunction;
+      merge = mergeOneOption;
+    };
   };
 
   configure =
@@ -26,6 +40,7 @@ let
         checks
         devShells
         formatter
+        overlays
         packages
         templates
         ;

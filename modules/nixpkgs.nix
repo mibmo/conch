@@ -10,17 +10,8 @@ let
 
   inherit (lib) types;
   inherit (lib.lists) any;
-  inherit (lib.options) literalExpression mergeOneOption mkOption;
+  inherit (lib.options) literalExpression mkOption;
   inherit (lib.strings) getName match;
-  inherit (lib.trivial) isFunction;
-  inherit (lib.types) mkOptionType;
-
-  overlayType = mkOptionType {
-    name = "nixpkgs-overlay";
-    description = "nixpkgs overlay";
-    check = isFunction;
-    merge = mergeOneOption;
-  };
 
   # mostly lifted from nixos; https://github.com/NixOS/nixpkgs/blob/46e634be05ce9dc6d4db8e664515ba10b78151ae/nixos/modules/misc/nixpkgs.nix
   # see comments for differences
@@ -90,7 +81,7 @@ in
     };
 
     overlays = mkOption {
-      type = with types; listOf overlayType;
+      type = with types; listOf conch.types.overlay;
       default = [ ];
       example = literalExpression ''
         [

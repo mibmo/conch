@@ -99,6 +99,11 @@ in
       apply = conch.attrsOrApplySystemsWithGenerator conch.genericGenerator;
     };
 
+    overlays = mkOption {
+      type = with lib.types; attrsOf conch.types.overlay;
+      default = { };
+    };
+
     packages = mkOption {
       type = with lib.types; either (attrsOf (attrsOf package)) (functionTo (attrsOf package));
       default = { };
