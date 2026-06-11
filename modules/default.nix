@@ -99,6 +99,16 @@ in
       apply = conch.attrsOrApplySystemsWithGenerator conch.genericGenerator;
     };
 
+    nixosModules = mkOption {
+      type =
+        with lib.types;
+        attrsOf (oneOf [
+          attrs
+          lib.types.path
+          (functionTo attrs)
+        ]);
+    };
+
     overlays = mkOption {
       type = with lib.types; attrsOf conch.types.overlay;
       default = { };

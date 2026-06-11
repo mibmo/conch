@@ -40,6 +40,7 @@ let
         checks
         devShells
         formatter
+        nixosModules
         overlays
         packages
         templates
