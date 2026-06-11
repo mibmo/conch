@@ -104,6 +104,23 @@ in
       default = { };
       apply = conch.attrsOrApplySystemsWithGenerator conch.genericGenerator;
     };
+
+    templates = mkOption {
+      type =
+        let
+          template.options = {
+            path = mkOption {
+              type = lib.types.path;
+            };
+            description = mkOption {
+              type = lib.types.str;
+            };
+          };
+        in
+        with lib.types;
+        attrsOf (submodule template);
+      default = { };
+    };
   };
 
   config._module.args.conch = {

@@ -27,6 +27,7 @@ let
         devShells
         formatter
         packages
+        templates
         ;
     };
 
