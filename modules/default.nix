@@ -12,6 +12,7 @@ let
     mapAttrs
     nameValuePair
     ;
+  inherit (lib.lists) uniqueStrings;
   inherit (lib.options) mkOption;
   inherit (lib.strings) concatStringsSep escapeShellArg makeLibraryPath;
   inherit (lib.trivial) isFunction;
@@ -27,6 +28,7 @@ in
       # default should generally cover as many standard systems as possible
       default = lib.systems.flakeExposed;
       description = "Systems to generate attributes for";
+      apply = uniqueStrings;
     };
 
     packages = mkOption {
