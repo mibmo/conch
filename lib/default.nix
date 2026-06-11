@@ -17,6 +17,12 @@ let
   };
 
   types = {
+    derivation = mkOptionType {
+      name = "derivation";
+      description = "nix derivation";
+      check = isDerivation;
+      merge = mergeOneOption;
+    };
     nixosConfiguration = mkOptionType {
       name = "nixos-configuration";
       description = "nixos configuration";
@@ -47,6 +53,7 @@ let
         checks
         devShells
         formatter
+        hydraJobs
         nixosConfigurations
         nixosModules
         overlays

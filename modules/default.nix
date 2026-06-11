@@ -99,6 +99,11 @@ in
       apply = conch.attrsOrApplySystemsWithGenerator conch.genericGenerator;
     };
 
+    hydraJobs = mkOption {
+      type = with lib.types; attrsOf (attrsOf conch.types.derivation);
+      default = { };
+    };
+
     nixosConfigurations = mkOption {
       type = with lib.types; attrsOf conch.types.nixosConfiguration;
       default = { };
