@@ -2,6 +2,7 @@
 let
   lib = import inputs.nixpkgs-lib;
 
+  inherit (lib.attrsets) isDerivation;
   inherit (lib.options) mergeOneOption;
   inherit (lib.trivial) isFunction;
   inherit (lib.types) mkOptionType;
@@ -16,6 +17,12 @@ let
   };
 
   types = {
+    nixosConfiguration = mkOptionType {
+      name = "nixos-configuration";
+      description = "nixos configuration";
+      check = x: isDerivation (x.config.system.build.toplevel or null);
+      merge = mergeOneOption;
+    };
     overlay = mkOptionType {
       name = "nixpkgs-overlay";
       description = "nixpkgs overlay";
@@ -40,6 +47,7 @@ let
         checks
         devShells
         formatter
+        nixosConfigurations
         nixosModules
         overlays
         packages

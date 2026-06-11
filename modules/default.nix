@@ -99,6 +99,11 @@ in
       apply = conch.attrsOrApplySystemsWithGenerator conch.genericGenerator;
     };
 
+    nixosConfigurations = mkOption {
+      type = with lib.types; attrsOf conch.types.nixosConfiguration;
+      default = { };
+    };
+
     nixosModules = mkOption {
       type =
         with lib.types;
