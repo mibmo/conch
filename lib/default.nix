@@ -2,7 +2,8 @@
 let
   nixpkgs-lib = import inputs.nixpkgs-lib;
 
-  inherit (nixpkgs-lib.attrsets) isDerivation;
+  inherit (nixpkgs-lib.attrsets) isDerivation listToAttrs;
+  inherit (nixpkgs-lib.lists) filter;
   inherit (nixpkgs-lib.options) mergeOneOption;
   inherit (nixpkgs-lib.trivial) isFunction;
   inherit (nixpkgs-lib.types) mkOptionType;
@@ -58,20 +59,27 @@ let
         ];
       };
     in
-    {
-      inherit (eval.config)
-        apps
-        checks
-        devShells
-        formatter
-        hydraJobs
-        nixosConfigurations
-        nixosModules
-        overlays
-        packages
-        templates
-        ;
-    };
+    listToAttrs (
+      filter ({ name, ... }: name != null) (
+        map
+          (key: {
+            name = setIf key (eval.config.${key} != { });
+            value = eval.config.${key};
+          })
+          [
+            "apps"
+            "checks"
+            "devShells"
+            "formatter"
+            "hydraJobs"
+            "nixosConfigurations"
+            "nixosModules"
+            "overlays"
+            "packages"
+            "templates"
+          ]
+      )
+    );
 
   /*
     Set key in attribute set based on condition
