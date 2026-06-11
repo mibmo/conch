@@ -1,11 +1,15 @@
 { inputs, ... }:
 let
-  lib = import inputs.nixpkgs-lib;
+  nixpkgs-lib = import inputs.nixpkgs-lib;
 
-  inherit (lib.attrsets) isDerivation;
-  inherit (lib.options) mergeOneOption;
-  inherit (lib.trivial) isFunction;
-  inherit (lib.types) mkOptionType;
+  inherit (nixpkgs-lib.attrsets) isDerivation;
+  inherit (nixpkgs-lib.options) mergeOneOption;
+  inherit (nixpkgs-lib.trivial) isFunction;
+  inherit (nixpkgs-lib.types) mkOptionType;
+
+  lib = nixpkgs-lib // {
+    inherit conch;
+  };
 
   # exposed library functions
   conch = {
@@ -47,7 +51,7 @@ let
     module:
     let
       eval = lib.modules.evalModules {
-        specialArgs = { inherit inputs; };
+        specialArgs = { inherit inputs lib; };
         modules = [
           ../modules
           module

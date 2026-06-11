@@ -32,7 +32,7 @@ in
     };
 
     apps = mkOption {
-      type = with lib.types; attrsOf (attrsOf conch.types.app);
+      type = with lib.types; attrsOf (attrsOf lib.conch.types.app);
       default = { };
     };
 
@@ -105,12 +105,12 @@ in
     };
 
     hydraJobs = mkOption {
-      type = with lib.types; attrsOf (attrsOf conch.types.derivation);
+      type = with lib.types; attrsOf (attrsOf lib.conch.types.derivation);
       default = { };
     };
 
     nixosConfigurations = mkOption {
-      type = with lib.types; attrsOf conch.types.nixosConfiguration;
+      type = with lib.types; attrsOf lib.conch.types.nixosConfiguration;
       default = { };
     };
 
@@ -125,7 +125,7 @@ in
     };
 
     overlays = mkOption {
-      type = with lib.types; attrsOf conch.types.overlay;
+      type = with lib.types; attrsOf lib.conch.types.overlay;
       default = { };
     };
 
