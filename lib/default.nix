@@ -7,11 +7,8 @@ let
     inherit
       configure
       setIf
-      types
       ;
   };
-
-  types = import ./types.nix;
 
   configure =
     module:
