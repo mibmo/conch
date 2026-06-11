@@ -6,6 +6,7 @@ let
   conch = {
     inherit
       configure
+      setIf
       types
       ;
   };
@@ -26,5 +27,19 @@ let
     {
       inherit (eval.config) packages devShells formatter;
     };
+
+  /*
+    Set key in attribute set based on condition
+
+    # Examples
+    :::{.example}
+    ```nix
+    {
+      ${setIf "overrides" (system == "aarch64-darwin")} = [ ... ];
+    }
+    ```
+    :::
+  */
+  setIf = key: condition: if condition then key else null;
 in
 conch
