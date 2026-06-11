@@ -81,7 +81,7 @@ in
     };
 
     overlays = mkOption {
-      type = with types; listOf conch.types.overlay;
+      type = with types; listOf lib.conch.types.overlay;
       default = [ ];
       example = literalExpression ''
         [
