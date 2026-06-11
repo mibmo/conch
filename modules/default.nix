@@ -31,6 +31,12 @@ in
       apply = uniqueStrings;
     };
 
+    checks = mkOption {
+      type = with lib.types; either (attrsOf (attrsOf package)) (functionTo (attrsOf package));
+      default = { };
+      apply = conch.attrsOrApplySystemsWithGenerator conch.genericGenerator;
+    };
+
     packages = mkOption {
       type = with lib.types; either (attrsOf (attrsOf package)) (functionTo (attrsOf package));
       default = { };

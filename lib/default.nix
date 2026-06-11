@@ -22,7 +22,12 @@ let
       };
     in
     {
-      inherit (eval.config) packages devShells formatter;
+      inherit (eval.config)
+        checks
+        packages
+        devShells
+        formatter
+        ;
     };
 
   /*
