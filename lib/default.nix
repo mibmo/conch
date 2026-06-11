@@ -2,7 +2,7 @@
 let
   nixpkgs-lib = import inputs.nixpkgs-lib;
 
-  inherit (nixpkgs-lib.attrsets) isDerivation listToAttrs;
+  inherit (nixpkgs-lib.attrsets) isAttrs isDerivation listToAttrs;
   inherit (nixpkgs-lib.lists) filter;
   inherit (nixpkgs-lib.options) mergeOneOption;
   inherit (nixpkgs-lib.trivial) isFunction;
@@ -25,7 +25,7 @@ let
     app = mkOptionType {
       name = "app";
       description = "nix flake app";
-      check = isDerivation;
+      check = x: isAttrs x && x.type == "app" && isDerivation x.program;
       merge = mergeOneOption;
     };
     derivation = mkOptionType {
