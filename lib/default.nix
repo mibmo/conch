@@ -17,6 +17,12 @@ let
   };
 
   types = {
+    app = mkOptionType {
+      name = "app";
+      description = "nix flake app";
+      check = isDerivation;
+      merge = mergeOneOption;
+    };
     derivation = mkOptionType {
       name = "derivation";
       description = "nix derivation";
@@ -50,6 +56,7 @@ let
     in
     {
       inherit (eval.config)
+        apps
         checks
         devShells
         formatter

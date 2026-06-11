@@ -31,6 +31,11 @@ in
       apply = uniqueStrings;
     };
 
+    apps = mkOption {
+      type = with lib.types; attrsOf (attrsOf conch.types.app);
+      default = { };
+    };
+
     checks = mkOption {
       type = with lib.types; either (attrsOf (attrsOf package)) (functionTo (attrsOf package));
       default = { };
