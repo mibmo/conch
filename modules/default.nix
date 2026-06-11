@@ -37,12 +37,6 @@ in
       apply = conch.attrsOrApplySystemsWithGenerator conch.genericGenerator;
     };
 
-    packages = mkOption {
-      type = with lib.types; either (attrsOf (attrsOf package)) (functionTo (attrsOf package));
-      default = { };
-      apply = conch.attrsOrApplySystemsWithGenerator conch.genericGenerator;
-    };
-
     devShells = mkOption {
       type =
         with lib.types;
@@ -101,6 +95,12 @@ in
 
     formatter = mkOption {
       type = with lib.types; either (attrsOf (attrsOf package)) (functionTo package);
+      default = { };
+      apply = conch.attrsOrApplySystemsWithGenerator conch.genericGenerator;
+    };
+
+    packages = mkOption {
+      type = with lib.types; either (attrsOf (attrsOf package)) (functionTo (attrsOf package));
       default = { };
       apply = conch.attrsOrApplySystemsWithGenerator conch.genericGenerator;
     };

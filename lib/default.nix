@@ -24,9 +24,9 @@ let
     {
       inherit (eval.config)
         checks
-        packages
         devShells
         formatter
+        packages
         ;
     };
 
