@@ -12,9 +12,19 @@ let
     mapAttrs
     nameValuePair
     ;
-  inherit (lib.lists) uniqueStrings;
+  inherit (lib.lists)
+    all
+    head
+    tail
+    uniqueStrings
+    ;
   inherit (lib.options) mkOption;
-  inherit (lib.strings) concatStringsSep escapeShellArg makeLibraryPath;
+  inherit (lib.strings)
+    concatStringsSep
+    escapeShellArg
+    makeLibraryPath
+    typeOf
+    ;
   inherit (lib.trivial) isFunction;
 in
 {
@@ -43,15 +53,30 @@ in
     };
 
     devShells = mkOption {
+      # this convulted type w/ check is needed to represent `either (attrsOf t1) (attrsOf t2)`, as the nix module system doesn't seem to be able to properly type-check it at eval-time otherwise and degenerates into `attrsOf t1`
       type =
-        with lib.types;
-        either (attrsOf (attrsOf package)) (attrsOf (functionTo (submodule ./shell.nix)));
+        lib.types.addCheck
+          (with lib.types; attrsOf (either (attrsOf package) (functionTo (submodule ./shell.nix))))
+          (
+            x:
+            let
+              values = map typeOf (attrValues x);
+              first = head values;
+            in
+            x == { } || all (e: e == first) (tail values)
+          )
+        // {
+          # use description of emulated type
+          inherit ((with lib.types; either (attrsOf (attrsOf package)) (functionTo (submodule ./shell.nix))))
+            description
+            ;
+        };
       default = { };
       apply =
         value:
         if value == { } then
           { }
-        else if isFunction value then
+        else if isFunction (head (attrValues value)) then
           conch.applySystemsWithGenerator (
             system:
             let
