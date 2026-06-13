@@ -87,7 +87,7 @@ in
                   # @TODO: include formatter once it's done
                   packages = shell.packages; # ++ [ config.formatter ];
                   LD_LIBRARY_PATH = makeLibraryPath shell.libraries;
-                  inputsFrom = attrValues config.packages.${system};
+                  inputsFrom = attrValues (config.packages.${system} or { });
                   shellHook =
                     let
                       aliasCmd = foldlAttrs (
