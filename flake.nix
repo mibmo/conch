@@ -25,6 +25,10 @@
           description = "Template showing nixpkgs overlay being applied";
           path = ./templates/nixpkgs;
         };
+        rust = {
+          description = "Rust template with devshell";
+          path = ./templates/rust;
+        };
       };
     };
 }
