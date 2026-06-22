@@ -29,6 +29,10 @@
           description = "Rust template with devshell";
           path = ./templates/rust;
         };
+        rust-with-packages = {
+          description = "Rust template with devshell and package outputs";
+          path = ./templates/rust-with-packages;
+        };
       };
     };
 }
