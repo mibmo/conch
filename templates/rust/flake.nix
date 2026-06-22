@@ -24,12 +24,18 @@
       nixpkgs.overlays = [ (import rust-overlay) ];
       devShells.default =
         { pkgs, ... }:
+        let
+          rust = pkgs.rust-bin.stable.latest;
+        in
         {
-          environment."RUST_LOG" = "my_crate=trace";
+          environment = {
+            "RUST_SRC_PATH" = "${rust.rust-src}/lib/rustlib/src/rust/library";
+            "RUST_LOG" = "my_crate=trace";
+          };
           packages = with pkgs; [
             openssl
             pkg-config
-            rust-bin.stable.latest.default
+            rust.default
           ];
         };
       formatter =
