@@ -15,6 +15,9 @@
 
   outputs =
     { conch, rust-overlay, ... }:
+    let
+      rustFor = pkgs: pkgs.rust-bin.stable.latest;
+    in
     conch.configure {
       systems = [
         "aarch64-darwin"
@@ -25,7 +28,7 @@
       devShells.default =
         { pkgs, ... }:
         let
-          rust = pkgs.rust-bin.stable.latest;
+          rust = rustFor pkgs;
         in
         {
           environment = {
@@ -40,10 +43,13 @@
         };
       formatter =
         { pkgs, ... }:
+        let
+          rust = rustFor pkgs;
+        in
         pkgs.treefmt.withConfig {
           runtimeInputs = with pkgs; [
             nixfmt
-            rustfmt
+            rust.rustfmt
           ];
           settings = {
             excludes = [
