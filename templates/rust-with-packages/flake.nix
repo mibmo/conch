@@ -23,8 +23,12 @@
       ...
     }:
     let
-      rustFor = pkgs: pkgs.rust-bin.stable.latest;
-      craneFor = pkgs: (crane.mkLib pkgs).overrideToolchain (pkgs': (rustFor pkgs').default);
+      rustFor =
+        pkgs:
+        pkgs.rust-bin.stable.latest.default.override {
+          extensions = [ "rust-src" ];
+        };
+      craneFor = pkgs: (crane.mkLib pkgs).overrideToolchain rustFor;
     in
     conch.configure {
       systems = [
@@ -36,7 +40,7 @@
         {
           mkShell = (craneFor pkgs).devShell;
           environment = {
-            "RUST_SRC_PATH" = "${(rustFor pkgs).rust-src}/lib/rustlib/src/rust/library";
+            "RUST_SRC_PATH" = "${rustFor pkgs}/lib/rustlib/src/rust/library";
             "RUST_LOG" = "my_crate=trace";
           };
           packages = with pkgs; [
@@ -60,7 +64,7 @@
         pkgs.treefmt.withConfig {
           runtimeInputs = with pkgs; [
             nixfmt
-            (rustFor pkgs).rustfmt
+            (rustFor pkgs)
           ];
           settings = {
             excludes = [

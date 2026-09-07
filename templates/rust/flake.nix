@@ -16,7 +16,11 @@
   outputs =
     { conch, rust-overlay, ... }:
     let
-      rustFor = pkgs: pkgs.rust-bin.stable.latest;
+      rustFor =
+        pkgs:
+        pkgs.rust-bin.stable.latest.default.override {
+          extensions = [ "rust-src" ];
+        };
     in
     conch.configure {
       systems = [
@@ -32,24 +36,21 @@
         in
         {
           environment = {
-            "RUST_SRC_PATH" = "${rust.rust-src}/lib/rustlib/src/rust/library";
+            "RUST_SRC_PATH" = "${rust}/lib/rustlib/src/rust/library";
             "RUST_LOG" = "my_crate=trace";
           };
           packages = with pkgs; [
             openssl
             pkg-config
-            rust.default
+            rust
           ];
         };
       formatter =
         { pkgs, ... }:
-        let
-          rust = rustFor pkgs;
-        in
         pkgs.treefmt.withConfig {
           runtimeInputs = with pkgs; [
             nixfmt
-            rust.rustfmt
+            (rustFor pkgs)
           ];
           settings = {
             excludes = [
