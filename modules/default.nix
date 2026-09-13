@@ -1,6 +1,7 @@
 {
   conch,
   config,
+  inputs,
   lib,
   ...
 }:
@@ -36,7 +37,8 @@ in
     systems = mkOption {
       type = with lib.types; listOf (strMatching "[a-z0-9_]+-[a-z0-9]+");
       # default should generally cover as many standard systems as possible
-      default = lib.systems.flakeExposed;
+      # using overridden nixpkgs input as it's most authoritative for packages in use
+      default = inputs.nixpkgs.lib.systems.flakeExposed;
       description = "Systems to generate attributes for";
       apply = uniqueStrings;
     };
