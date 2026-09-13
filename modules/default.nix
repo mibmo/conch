@@ -155,7 +155,7 @@ in
     };
 
     packages = mkOption {
-      type = with lib.types; either (attrsOf (attrsOf package)) (functionTo (attrsOf package));
+      type = with lib.types; either (attrsOf (attrsOf anything)) (functionTo (attrsOf anything));
       default = { };
       apply = conch.attrsOrApplySystemsWithGenerator conch.genericGenerator;
     };
